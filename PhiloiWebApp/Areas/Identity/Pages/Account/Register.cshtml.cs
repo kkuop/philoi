@@ -77,7 +77,7 @@ namespace PhiloiWebApp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl = returnUrl ?? Url.Content("~/Users/Create");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
@@ -92,7 +92,7 @@ namespace PhiloiWebApp.Areas.Identity.Pages.Account
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
+                        "/Users/Create",
                         pageHandler: null,
                         values: new { area = "Identity", userId = user.Id, code = code },
                         protocol: Request.Scheme);
