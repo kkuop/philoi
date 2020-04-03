@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PhiloiWebApp.Data;
 
-namespace PhiloiWebApp.Data.Migrations
+namespace PhiloiWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200403164755_categories2")]
+    partial class categories2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,22 +46,6 @@ namespace PhiloiWebApp.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "f3f8dd3e-016f-408b-b133-8123812c3538",
-                            ConcurrencyStamp = "bd0f08bb-bb7c-4dc5-8f5e-696d33474143",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "96db2920-9f2b-4d41-8260-e2f550ad4b0a",
-                            ConcurrencyStamp = "a62aa04f-eb0f-4ecf-81cc-ab9d19bcfc4c",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -178,10 +164,12 @@ namespace PhiloiWebApp.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -218,10 +206,12 @@ namespace PhiloiWebApp.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -244,6 +234,33 @@ namespace PhiloiWebApp.Data.Migrations
                     b.HasKey("CategoriesId");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoriesId = 1,
+                            Name = "Fandoms"
+                        },
+                        new
+                        {
+                            CategoriesId = 2,
+                            Name = "Sports"
+                        },
+                        new
+                        {
+                            CategoriesId = 3,
+                            Name = "Music"
+                        },
+                        new
+                        {
+                            CategoriesId = 4,
+                            Name = "Activites"
+                        },
+                        new
+                        {
+                            CategoriesId = 5,
+                            Name = "Movies"
+                        });
                 });
 
             modelBuilder.Entity("PhiloiWebApp.Models.Interests", b =>
@@ -354,13 +371,13 @@ namespace PhiloiWebApp.Data.Migrations
 
             modelBuilder.Entity("PhiloiWebApp.Models.Interests", b =>
                 {
-                    b.HasOne("PhiloiWebApp.Models.Interests", "categories")
+                    b.HasOne("PhiloiWebApp.Models.Categories", "Category")
                         .WithMany()
                         .HasForeignKey("CategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhiloiWebApp.Models.User", "user")
+                    b.HasOne("PhiloiWebApp.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
