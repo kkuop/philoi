@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PhiloiWebApp.Contracts;
 using PhiloiWebApp.Data;
 using PhiloiWebApp.Models;
 
@@ -14,29 +15,33 @@ namespace PhiloiWebApp.Controllers
     [Authorize(Roles = "User")]
     public class UsersController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepositoryWrapper _repo;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(IRepositoryWrapper repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         // GET: Users
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
+<<<<<<< HEAD
             return View(await _context.Categories.ToListAsync());
+=======
+            var users = _repo.User.FindAll();
+            return View(users);
+>>>>>>> cd93a1352c06a07874c9d513034b8564f88e2d39
         }
 
         // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.UserId == id);
+            var user = _repo.User.FindByCondition(m => m.UserId == id).SingleOrDefault();
             if (user == null)
             {
                 return NotFound();
@@ -56,26 +61,30 @@ namespace PhiloiWebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+<<<<<<< HEAD
         public async Task<IActionResult> Create([Bind("UserId,FirstName,LastName,Email,ZipCode")] User user)
+=======
+        public IActionResult Create([Bind("UserId,FirstName,LastName,Email,ZipCode,Longitude,Latitude")] User user)
+>>>>>>> cd93a1352c06a07874c9d513034b8564f88e2d39
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
+                _repo.User.Create(user);
+                _repo.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
         }
 
         // GET: Users/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User.FindAsync(id);
+            var user = _repo.User.FindByCondition(u => u.UserId == id).SingleOrDefault();
             if (user == null)
             {
                 return NotFound();
@@ -88,7 +97,7 @@ namespace PhiloiWebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,FirstName,LastName,Email,ZipCode,Longitude,Latitude")] User user)
+        public IActionResult Edit(int id, [Bind("UserId,FirstName,LastName,Email,ZipCode,Longitude,Latitude")] User user)
         {
             if (id != user.UserId)
             {
@@ -99,8 +108,8 @@ namespace PhiloiWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    _repo.User.Update(user);
+                    _repo.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -119,15 +128,14 @@ namespace PhiloiWebApp.Controllers
         }
 
         // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.UserId == id);
+            var user = _repo.User.FindByCondition(m => m.UserId == id);
             if (user == null)
             {
                 return NotFound();
@@ -139,17 +147,22 @@ namespace PhiloiWebApp.Controllers
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var user = await _context.User.FindAsync(id);
-            _context.User.Remove(user);
-            await _context.SaveChangesAsync();
+            var user = _repo.User.FindByCondition(u => u.UserId == id).SingleOrDefault();
+            _repo.User.Delete(user);
+            _repo.Save();
             return RedirectToAction(nameof(Index));
         }
 
         private bool UserExists(int id)
         {
-            return _context.User.Any(e => e.UserId == id);
+            var foundUser = _repo.User.FindByCondition(e => e.UserId == id);
+            if(foundUser != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
