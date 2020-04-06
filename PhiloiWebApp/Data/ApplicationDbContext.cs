@@ -20,7 +20,7 @@ namespace PhiloiWebApp.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Categories>()
               .HasData(
-                 new Categories { CategoriesId = 1, Name = "Fandoms"},
+                 new Categories { CategoriesId = 1, Name = "Fandoms" },
                  new Categories { CategoriesId = 2, Name = "Sports" },
                  new Categories { CategoriesId = 3, Name = "Music" },
                  new Categories { CategoriesId = 4, Name = "Activites" },
