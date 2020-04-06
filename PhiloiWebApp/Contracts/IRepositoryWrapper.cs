@@ -8,6 +8,8 @@ namespace PhiloiWebApp.Contracts
     public interface IRepositoryWrapper
     {
         IUserRepository User { get; }
+        IInterestRepository Interest { get; }
+        ICategoryRepository Category { get; }
         void Save();
     }
 }

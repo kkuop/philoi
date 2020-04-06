@@ -10,6 +10,8 @@ namespace PhiloiWebApp.Data
     {
         private ApplicationDbContext _context;
         private IUserRepository _user;
+        private IInterestRepository _interest;
+        private ICategoryRepository _category;
         public IUserRepository User
         {
             get
@@ -19,6 +21,28 @@ namespace PhiloiWebApp.Data
                     _user = new UserRepository(_context);
                 }
                 return _user;
+            }
+        }
+        public IInterestRepository Interest
+        {
+            get
+            {
+                if(_interest == null)
+                {
+                    _interest = new InterestRepository(_context);
+                }
+                return _interest;
+            }
+        }
+        public ICategoryRepository Category
+        {
+            get
+            {
+                if(_category == null)
+                {
+                    _category = new CategoryRepository(_context);
+                }
+                return _category;
             }
         }
         public RepositoryWrapper(ApplicationDbContext context)
