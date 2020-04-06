@@ -25,12 +25,9 @@ namespace PhiloiWebApp.Controllers
         // GET: Users
         public IActionResult Index()
         {
-<<<<<<< HEAD
-            return View(await _context.Categories.ToListAsync());
-=======
             var users = _repo.User.FindAll();
             return View(users);
->>>>>>> cd93a1352c06a07874c9d513034b8564f88e2d39
+
         }
 
         // GET: Users/Details/5
@@ -61,11 +58,8 @@ namespace PhiloiWebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-<<<<<<< HEAD
-        public async Task<IActionResult> Create([Bind("UserId,FirstName,LastName,Email,ZipCode")] User user)
-=======
         public IActionResult Create([Bind("UserId,FirstName,LastName,Email,ZipCode,Longitude,Latitude")] User user)
->>>>>>> cd93a1352c06a07874c9d513034b8564f88e2d39
+
         {
             if (ModelState.IsValid)
             {
