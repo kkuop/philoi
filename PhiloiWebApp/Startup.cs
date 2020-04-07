@@ -16,6 +16,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using PhiloiWebApp.Action_Filters;
 using PhiloiWebApp.Contracts;
+using PhiloiWebApp.Service_Classes;
 
 namespace PhiloiWebApp
 {
@@ -40,6 +41,7 @@ namespace PhiloiWebApp
                  .AddDefaultTokenProviders();
             services.AddScoped<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User); services.AddControllers(config => { config.Filters.Add(typeof(GlobalRouting)); });
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<InterestService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

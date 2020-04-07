@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using PhiloiWebApp.Contracts;
 using PhiloiWebApp.Data;
 using PhiloiWebApp.Models;
+using PhiloiWebApp.Service_Classes;
 
 namespace PhiloiWebApp.Controllers
 {
@@ -16,22 +17,24 @@ namespace PhiloiWebApp.Controllers
     public class UsersController : Controller
     {
         private readonly IRepositoryWrapper _repo;
+        private IInterestService _interest;
 
         public UsersController(IRepositoryWrapper repo)
         {
             _repo = repo;
         }
 
-        // GET: Users
-        public IActionResult Index(User user)
+        public async Task<IActionResult> Index(User user)
         {
-            var interests = _repo.Interest.FindAll();
-            
-            var interestToSendToView = interests.Include(s => s.Category);
+            ViewBag.ListOfInterests = await _interest.GetInterest();
+            var interests = _repo.Interest.FindByCondition(s => s.UserId == user.UserId);
+
+            var interestToSendToView =  interests.Include(s => s.Category);
 
             return View(interestToSendToView);
-
         }
+
+      
 
         // GET: Users/Details/5
         public IActionResult Details(int? id)
