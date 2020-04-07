@@ -15,14 +15,15 @@ namespace PhiloiWebApp.Service_Classes
         {
 
         }
-        public async Task<Interest> GetActivities()
+        public async Task<InterestJson> GetActivities()
         {
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync($"https://localhost:44376/api/activities");
             if(response.IsSuccessStatusCode)
             {
                 string json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Interest>(json);
+                List<InterestJson> listOfInterests = JsonConvert.DeserializeObject<List<InterestJson>>(json);
+                //return listOfInterests;
             }
             return null;
         }

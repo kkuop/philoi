@@ -1,12 +1,9 @@
-﻿namespace PhiloiWebApp.JSON_Classes
+﻿using Newtonsoft.Json;
+
+namespace PhiloiWebApp.JSON_Classes
 {
-
-    public class Interest
-    {
-        public Interests[] Property1 { get; set; }
-    }
-
-    public class Interests
+    [JsonArray]
+    public class InterestJson
     {
         public int activityId { get; set; }
         public string name { get; set; }
