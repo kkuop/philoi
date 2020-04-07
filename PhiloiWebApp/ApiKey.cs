@@ -7,6 +7,6 @@ namespace PhiloiWebApp
 {
     public static class ApiKey
     {
-        public static string GoogleKey { get { return "AIzaSyD-2uai6l9joMFoTUbJlijp9bPxD1AJwGU"; } }
+        public static string GoogleKey { get { return "AIzaSyDl-o4vu6esJIavKMa4WmS1Q_8tvdSgV3o"; } }
     }
 }
