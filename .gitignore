@@ -351,3 +351,4 @@ MigrationBackup/
 
 # User-defined
 /PhiloiWebApp/wwwroot*
+/PhiloiWebApp/ApiKey*

@@ -21,7 +21,7 @@ namespace PhiloiWebApp.Service_Classes
             HttpResponseMessage response = await client.GetAsync($"https://localhost:44376/api/activities");
             if(response.IsSuccessStatusCode)
             {
-                string json = response.Content.ReadAsStringAsync().Result;
+                string json = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Interest>(json);
             }
             return null;

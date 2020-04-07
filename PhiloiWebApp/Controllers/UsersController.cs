@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PhiloiWebApp.Contracts;
 using PhiloiWebApp.Data;
+using PhiloiWebApp.JSON_Classes;
 using PhiloiWebApp.Models;
 using PhiloiWebApp.Service_Classes;
 
@@ -19,14 +20,15 @@ namespace PhiloiWebApp.Controllers
         private readonly IRepositoryWrapper _repo;
         private IInterestService _interest;
 
-        public UsersController(IRepositoryWrapper repo)
+        public UsersController(IRepositoryWrapper repo, IInterestService interest)
         {
             _repo = repo;
+            _interest = interest;
         }
 
         public async Task<IActionResult> Index(User user)
         {
-            ViewBag.ListOfInterests = await _interest.GetActivities();
+            ViewBag.Activities = await _interest.GetActivities();
 
             var interests = _repo.Interest.FindByCondition(s => s.UserId == user.UserId);
 
