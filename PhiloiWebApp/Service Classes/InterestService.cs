@@ -15,7 +15,7 @@ namespace PhiloiWebApp.Service_Classes
         {
 
         }
-        public async Task<Interest> GetInterest()
+        public async Task<Interest> GetActivities()
         {
             HttpClient client = new HttpClient();
             HttpResponseMessage response = await client.GetAsync($"https://localhost:44376/api/activities");

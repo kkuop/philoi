@@ -26,7 +26,8 @@ namespace PhiloiWebApp.Controllers
 
         public async Task<IActionResult> Index(User user)
         {
-            ViewBag.ListOfInterests = await _interest.GetInterest();
+            ViewBag.ListOfInterests = await _interest.GetActivities();
+
             var interests = _repo.Interest.FindByCondition(s => s.UserId == user.UserId);
 
             var interestToSendToView =  interests.Include(s => s.Category);
