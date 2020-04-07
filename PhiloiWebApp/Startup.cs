@@ -42,6 +42,7 @@ namespace PhiloiWebApp
             services.AddScoped<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>().HttpContext.User); services.AddControllers(config => { config.Filters.Add(typeof(GlobalRouting)); });
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<InterestService>();
+            services.AddTransient<LocationService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
