@@ -23,10 +23,13 @@ namespace PhiloiWebApp.Controllers
         }
 
         // GET: Users
-        public IActionResult Index()
+        public IActionResult Index(User user)
         {
-            var users = _repo.User.FindAll();
-            return View(users);
+            var interests = _repo.Interest.FindAll();
+            
+            var interestToSendToView = interests.Include(s => s.Category);
+
+            return View(interestToSendToView);
 
         }
 
