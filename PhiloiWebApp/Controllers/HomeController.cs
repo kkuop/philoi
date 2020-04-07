@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PhiloiWebApp.Models;
+using PhiloiWebApp.Service_Classes;
 
 namespace PhiloiWebApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly LocationService _locationService;
+        public HomeController(ILogger<HomeController> logger,LocationService locationService)
         {
             _logger = logger;
+            _locationService = locationService;
         }
 
         public IActionResult Index()
