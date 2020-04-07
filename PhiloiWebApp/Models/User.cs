@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ namespace PhiloiWebApp.Models
         public double Longitude { get; set; }
         public double Latitude { get; set; }
         public string ImgUrl { get; set; }
+        [NotMapped]
         public List<string> Interests { get; set; }
 
         public User()

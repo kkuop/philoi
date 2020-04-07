@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace PhiloiWebApp.JSON_Classes
 {
-    [JsonArray]
+    
     public class InterestJson
     {
         public int activityId { get; set; }

@@ -22,8 +22,9 @@ namespace PhiloiWebApp.Service_Classes
             if(response.IsSuccessStatusCode)
             {
                 string json = await response.Content.ReadAsStringAsync();
-                List<InterestJson> listOfInterests = JsonConvert.DeserializeObject<List<InterestJson>>(json);
-                //return listOfInterests;
+                var listOfInterests = JsonConvert.DeserializeObject<InterestJson>(json);
+                var num = 1;
+                return listOfInterests;
             }
             return null;
         }
