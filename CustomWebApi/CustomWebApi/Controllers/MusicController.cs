@@ -13,59 +13,59 @@ namespace CustomWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FandomsController : ControllerBase
+    public class MusicController : ControllerBase
     {
         private IRepositoryWrapper _repo;
 
-        public FandomsController(IRepositoryWrapper repo)
+        public MusicController(IRepositoryWrapper repo)
         {
             _repo = repo;
         }
 
-        // GET: api/Fandoms
+        // GET: api/Music
         [HttpGet]
         public IActionResult Get()
         {
-            var fandoms = _repo.Fandom.FindAll().Select(a => a);
-            return Ok(fandoms);
+            var music = _repo.Music.FindAll().Select(a => a);
+            return Ok(music);
         }
 
-        // GET: api/Fandoms/5
+        // GET: api/Music/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var fandom = _repo.Fandom.FindByCondition(a => a.FandomId == id).SingleOrDefault(); ;
+            var music = _repo.Music.FindByCondition(a => a.MusicId == id).SingleOrDefault();
 
-            if (fandom == null)
+            if (music == null)
             {
                 return NotFound();
             }
 
-            return Ok(fandom);
+            return Ok(music);
         }
 
-        // PUT: api/Fandoms/5
+        // PUT: api/Music/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Fandom fandom)
+        public IActionResult Put(int id, Music music)
         {
-            if (id != fandom.FandomId)
+            if (id != music.MusicId)
             {
                 return BadRequest();
             }
 
             try
             {
-                var foundFandom = _repo.Fandom.FindByCondition(a => a.FandomId == id).SingleOrDefault();
-                foundFandom.Name = fandom.Name;
-                _repo.Fandom.Update(foundFandom);
+                var foundMusic = _repo.Music.FindByCondition(a => a.MusicId == id).SingleOrDefault();
+                foundMusic.Name = music.Name;
+                _repo.Music.Update(foundMusic);
                 _repo.Save();
-                return Ok(foundFandom);
+                return Ok(foundMusic);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!FandomExists(id))
+                if (!MusicExists(id))
                 {
                     return NotFound();
                 }
@@ -76,38 +76,38 @@ namespace CustomWebApi.Controllers
             }
         }
 
-        // POST: api/Fandoms
+        // POST: api/Music
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public IActionResult Post([FromBody] Fandom fandom)
+        public IActionResult Post([FromBody] Music music)
         {
-            _repo.Fandom.Create(fandom);
+            _repo.Music.Create(music);
             _repo.Save();
 
-            return Ok(fandom);
+            return Ok(music);
         }
 
-        // DELETE: api/Fandom/5
+        // DELETE: api/Music/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var fandom = _repo.Fandom.FindByCondition(a => a.FandomId == id).SingleOrDefault();
-            if (fandom == null)
+            var music = _repo.Music.FindByCondition(a => a.MusicId == id).SingleOrDefault();
+            if (music == null)
             {
                 return NotFound();
             }
 
-            _repo.Fandom.Delete(fandom);
+            _repo.Music.Delete(music);
             _repo.Save();
 
-            return Ok(fandom);
+            return Ok(music);
         }
 
-        private bool FandomExists(int id)
+        private bool MusicExists(int id)
         {
-            var fandom = _repo.Fandom.FindByCondition(a => a.FandomId == id).SingleOrDefault();
-            if(fandom != null)
+            var music = _repo.Music.FindByCondition(e => e.MusicId == id).SingleOrDefault();
+            if (music != null)
             {
                 return true;
             }

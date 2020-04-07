@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CustomWebApi.Data;
 using CustomWebApi.Models;
+using CustomWebApi.Contracts;
 
 namespace CustomWebApi.Controllers
 {
@@ -14,50 +15,53 @@ namespace CustomWebApi.Controllers
     [ApiController]
     public class ActivitiesController : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private IRepositoryWrapper _repo;
 
-        public ActivitiesController(ApplicationContext context)
+        public ActivitiesController(IRepositoryWrapper repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         // GET: api/Activities
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
+        public IActionResult Get()
         {
-            return await _context.Activities.ToListAsync();
+            var activities = _repo.Activity.FindAll().Select(a => a);
+            return Ok(activities);
         }
 
         // GET: api/Activities/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Activity>> GetActivity(int id)
+        [HttpGet("{id:int}")]
+        public IActionResult Get(int id)
         {
-            var activity = await _context.Activities.FindAsync(id);
+            var activity = _repo.Activity.FindByCondition(a => a.ActivityId == id).SingleOrDefault();
 
             if (activity == null)
             {
                 return NotFound();
             }
 
-            return activity;
+            return Ok(activity);
         }
 
         // PUT: api/Activities/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutActivity(int id, Activity activity)
+        public IActionResult Put(int id, Activity activity)
         {
             if (id != activity.ActivityId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(activity).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var foundActivity = _repo.Activity.FindByCondition(a => a.ActivityId == id).SingleOrDefault();
+                foundActivity.Name = activity.Name;
+                _repo.Activity.Update(foundActivity);
+                _repo.Save();
+                return Ok(foundActivity);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -70,41 +74,44 @@ namespace CustomWebApi.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
         }
 
         // POST: api/Activities
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Activity>> PostActivity(Activity activity)
+        public IActionResult Post([FromBody] Activity activity)
         {
-            _context.Activities.Add(activity);
-            await _context.SaveChangesAsync();
+            _repo.Activity.Create(activity);
+            _repo.Save();
 
-            return CreatedAtAction("GetActivity", new { id = activity.ActivityId }, activity);
+            return Ok(activity);
         }
 
         // DELETE: api/Activities/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Activity>> DeleteActivity(int id)
+        public IActionResult Delete(int id)
         {
-            var activity = await _context.Activities.FindAsync(id);
+            var activity = _repo.Activity.FindByCondition(a => a.ActivityId == id).SingleOrDefault() ;
             if (activity == null)
             {
                 return NotFound();
             }
 
-            _context.Activities.Remove(activity);
-            await _context.SaveChangesAsync();
+            _repo.Activity.Delete(activity);
+            _repo.Save();
 
-            return activity;
+            return Ok(activity);
         }
 
         private bool ActivityExists(int id)
         {
-            return _context.Activities.Any(e => e.ActivityId == id);
+            var activity =  _repo.Activity.FindByCondition(e => e.ActivityId == id).SingleOrDefault();
+            if(activity != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

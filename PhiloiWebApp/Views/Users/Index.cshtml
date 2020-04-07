@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    var listOfInterests = ViewBag.ListOfInterests;
 }
 
 <h1>Index</h1>
@@ -34,25 +35,25 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in listOfInterests) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
+                @Html.Raw(item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LastName)
+                @Html.Raw(item.LastName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Email)
+                @Html.Raw(item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ZipCode)
+                @Html.Raw( item.ZipCode)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Longitude)
+                @Html.Raw(item.Longitude)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Latitude)
+                @Html.Raw(item.Latitude)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> |

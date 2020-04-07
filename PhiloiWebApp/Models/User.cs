@@ -16,5 +16,10 @@ namespace PhiloiWebApp.Models
         public int ZipCode { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
+
+        public User()
+        {
+
+        }
     }
 }
