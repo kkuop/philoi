@@ -1,12 +1,8 @@
 ﻿using Newtonsoft.Json;
 using PhiloiWebApp.Models;
-<<<<<<< HEAD
 using System;
 using System.Collections.Generic;
 using System.Linq;
-=======
-using PhiloiWebApp.Models;
->>>>>>> nicksBranch
 using System.Net.Http;
 using System.Threading.Tasks;
 
