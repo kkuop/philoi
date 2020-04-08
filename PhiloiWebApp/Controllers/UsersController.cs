@@ -168,5 +168,16 @@ namespace PhiloiWebApp.Controllers
             }
             return false;
         }
+
+        public async Task<IActionResult> Search(string searchString)
+        {
+            /*var users = _repo.User.FindByCondition(u => u.ListOfInterests.Contains(searchString));
+            if (!String.IsNullOrEmpty(searchString))
+            {
+            users = users.Where(s => s.ListOfInterests.Contains(searchString));
+            }
+            return View(await users.ToListAsync());*/
+            return View();
+        }
     }
 }
