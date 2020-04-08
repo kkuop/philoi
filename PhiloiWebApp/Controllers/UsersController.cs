@@ -18,7 +18,7 @@ namespace PhiloiWebApp.Controllers
     public class UsersController : Controller
     {
         private readonly IRepositoryWrapper _repo;
-        private IInterestService _interest;
+        private readonly IInterestService _interest;
 
         public UsersController(IRepositoryWrapper repo, IInterestService interest)
         {
@@ -130,6 +130,14 @@ namespace PhiloiWebApp.Controllers
             }
             return View(user);
         }
+
+        [HttpPost]
+        public async Task<JsonResult> GetInterestsAsync(string prefix)
+        {
+            var interests = await _interest.GetActivities();
+            return Json(interests);
+        }
+
 
         // GET: Users/Delete/5
         public IActionResult Delete(int? id)

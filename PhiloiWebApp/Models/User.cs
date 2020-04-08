@@ -15,9 +15,7 @@ namespace PhiloiWebApp.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public int ZipCode { get; set; }
-
         public string Address { get; set; }
-
         public double Longitude { get; set; }
         public double Latitude { get; set; }
         public string ImgUrl { get; set; }
