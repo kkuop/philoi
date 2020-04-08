@@ -34,12 +34,10 @@ namespace PhiloiWebApp.Controllers
 
             var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
 
-
             user.Interests = interestToSendToView.ToList();
 
             return View(user);
         }
-
       
 
         // GET: Users/Details/5

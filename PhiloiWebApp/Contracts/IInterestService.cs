@@ -8,6 +8,6 @@ namespace PhiloiWebApp.Contracts
 {
     public interface IInterestService
     {
-        Task<InterestJson> GetActivities();
+        Task<Activities[]> GetActivities();
     }
 }
