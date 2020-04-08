@@ -20,7 +20,7 @@ namespace PhiloiWebApp.Service_Classes
         {
 
             HttpClient client = new HttpClient();
-            HttpResponseMessage httpResponse = await client.GetAsync($"https://maps.googleapis.com/maps/api/directions/json?origin={user1.Address}&destination={user2.Address}&key={ApiKey.Key}");
+            HttpResponseMessage httpResponse = await client.GetAsync($"https://maps.googleapis.com/maps/api/directions/json?origin={user1.Address}&destination={user2.Address}&key={ApiKey.GoogleKey}");
             if (httpResponse.IsSuccessStatusCode)
             {
                 string json = httpResponse.Content.ReadAsStringAsync().Result;
