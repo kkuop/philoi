@@ -1,10 +1,10 @@
-﻿@model IEnumerable<PhiloiWebApp.Models.User>
-
+﻿@model PhiloiWebApp.Models.User
+         
 @{
     ViewData["Title"] = "Edit Interests";
   //  Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<!DOCTYPE html>
+
 <title>Edit Interests</title>
 
 <meta charset="UTF-8">
@@ -28,12 +28,12 @@
                 @using (Html.BeginForm())
                 {
                     @Html.AntiForgeryToken()
-                    <div class="form-group">
+                    @*<div class="form-group">
                         @Html.LabelFor(model => model.Interests, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-4">
                             @Html.TextBoxFor(model => model.Interests, htmlAttributes: new { @class = "form-control" })
                         </div>
-                    </div>
+                    </div>*@
                     <div class="form-group">
                         <input type="submit" value="Add" class="btn btn-primary" />
                     </div>
@@ -46,19 +46,19 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Interests)
+                        @*@Html.DisplayNameFor(model => model.Interests)*@
                     </th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @*@foreach (var item in modelItem)
                 {
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => item.Interests.Name)
                         </td>
                     </tr>
-                }
+                }*@
             </tbody>
         </table>
     </div>
