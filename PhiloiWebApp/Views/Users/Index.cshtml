@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PhiloiWebApp.Models.Interests>
+﻿@model PhiloiWebApp.Models.User
 
 @{
     ViewData["Title"] = "Index";
@@ -127,7 +127,7 @@
                         <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Category)
+                                        @Html.DisplayNameFor(model => model.Interests)
                                     </th>
                                     <th>
                                         Interests
@@ -138,14 +138,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model)
+                                @foreach (var item in Model.Interests)
                                 {
                                     <tr>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Category.Name)
+                                            @Html.DisplayFor(modelItem => item.Interest)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Name)
+                                            @Html.DisplayFor(modelItem => item.Interest)
 
                                         </td>
 

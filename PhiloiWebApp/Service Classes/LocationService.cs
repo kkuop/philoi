@@ -1,7 +1,12 @@
 ﻿using Newtonsoft.Json;
+using PhiloiWebApp.Models;
+<<<<<<< HEAD
 using System;
 using System.Collections.Generic;
 using System.Linq;
+=======
+using PhiloiWebApp.Models;
+>>>>>>> nicksBranch
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -9,31 +14,24 @@ namespace PhiloiWebApp.Service_Classes
 {
     public class LocationService
     {
-        public LocationService() 
+        public LocationService()
         {
-        
-        
+
+
         }
-        public async Task<LocationService> GetLocation() 
+        
+        public async Task<LocationService> GetDistance(User user1,User user2)
         {
+
             HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync($"");
-            if(response.IsSuccessStatusCode)
+            HttpResponseMessage httpResponse = await client.GetAsync($"https://maps.googleapis.com/maps/api/directions/json?origin={user1.Address}&destination={user2.Address}&key={ApiKey.GoogleKey}");
+            if (httpResponse.IsSuccessStatusCode)
             {
-                string json = response.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject < LocationService >(json);
+                string json = httpResponse.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<LocationService>(json);
             }
             return null;
-        
-        
-        
-        
         }
-            public async Task<LocationService>FindDistanceBtween2Users()
-
-
-
-
 
     }
 }

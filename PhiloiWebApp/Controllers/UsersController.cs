@@ -30,11 +30,14 @@ namespace PhiloiWebApp.Controllers
         {
             ViewBag.Activities = await _interest.GetActivities();
 
-            var interests = _repo.Interest.FindByCondition(s => s.UserId == user.UserId);
+            var interests = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId);
 
-            var interestToSendToView =  interests.Include(s => s.Category);
+            var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
 
-            return View(interestToSendToView);
+
+            user.Interests = interestToSendToView.ToList();
+
+            return View(user);
         }
 
       

@@ -13,10 +13,6 @@ namespace PhiloiWebApp.Models
         public int InterestsId { get; set; }
         public string Name { get; set;}
 
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-        public User User { get; set; }
-
         [ForeignKey("Categories")]
         public int CategoriesId { get; set; }
         public Categories Category { get; set; }
