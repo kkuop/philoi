@@ -44,8 +44,16 @@
                     <input asp-for="ZipCode" class="form-control" />
                     <span asp-validation-for="ZipCode" class="text-danger"></span>
                 </div>
+                <div class="form-group">
+                    <label asp-for="ImgUrl" class="control-label"></label>
+                    <input asp-for="ImgUrl" class="form-control" />
+                    <span asp-validation-for="ImgUrl" class="text-danger"></span>
+                </div>
+                <input type="hidden" asp-for="Address" />
                 <input type="hidden" asp-for="Longitude" />
                 <input type="hidden" asp-for="Latitude" />
+                <input type="hidden" asp-for="IdentityUserId" />
+
 
                 <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />

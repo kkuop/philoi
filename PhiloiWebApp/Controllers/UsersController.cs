@@ -95,14 +95,16 @@ namespace PhiloiWebApp.Controllers
             return View(user);
         }
 
-        // POST: Users/Edit/5
+        // POST: Users/Edit
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("UserId,FirstName,LastName,Email,ZipCode")] User user)
+        public IActionResult Edit([Bind("UserId,FirstName,LastName,Email,ZipCode,Address,Longitude,Latitude,ImgUrl,IdentityUserId")] User user)
         {
-            if (id != user.UserId)
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(u => u.UserId == user.UserId).SingleOrDefault();
+            if (userId != foundUser.IdentityUserId)
             {
                 return NotFound();
             }
