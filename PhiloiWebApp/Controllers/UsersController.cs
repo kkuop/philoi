@@ -101,7 +101,7 @@ namespace PhiloiWebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("UserId,FirstName,LastName,Email,ZipCode,Longitude,Latitude")] User user)
+        public IActionResult Edit(int id, [Bind("UserId,FirstName,LastName,Email,ZipCode")] User user)
         {
             if (id != user.UserId)
             {
@@ -110,6 +110,7 @@ namespace PhiloiWebApp.Controllers
 
             if (ModelState.IsValid)
             {
+                
                 try
                 {
                     _repo.User.Update(user);
@@ -129,6 +130,61 @@ namespace PhiloiWebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
+        }
+        // GET: Users/EditInterests/5
+        public IActionResult EditInterests(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = _repo.User.FindByCondition(u => u.UserId == id).SingleOrDefault();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+        // POST: Users/EditInterests/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditInterests(int id, [Bind("Interests")] User user)
+        {
+            if (id != user.UserId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+                    _repo.User.Update(user);
+                    _repo.Save();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(user.UserId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        public JsonResult GetInterests(string prefix)
+        {
+            var interests = _interest.GetActivities();
+            return Json(interests);
         }
 
         [HttpPost]

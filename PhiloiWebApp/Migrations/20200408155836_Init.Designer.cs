@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PhiloiWebApp.Data;
 
 namespace PhiloiWebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200408155836_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,21 +288,15 @@ namespace PhiloiWebApp.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< HEAD
-=======
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
->>>>>>> daniellesBranch
                     b.HasKey("InterestsId");
 
                     b.HasIndex("CategoriesId");
 
-<<<<<<< HEAD
-=======
                     b.HasIndex("UserId");
 
->>>>>>> daniellesBranch
                     b.ToTable("Interests");
                 });
 
@@ -311,24 +307,12 @@ namespace PhiloiWebApp.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-<<<<<<< HEAD
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-=======
->>>>>>> daniellesBranch
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< HEAD
-                    b.Property<string>("ImgUrl")
-                        .HasColumnType("nvarchar(max)");
-
-=======
->>>>>>> daniellesBranch
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -429,15 +413,12 @@ namespace PhiloiWebApp.Migrations
                         .HasForeignKey("CategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-<<<<<<< HEAD
-=======
 
                     b.HasOne("PhiloiWebApp.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
->>>>>>> daniellesBranch
                 });
 
             modelBuilder.Entity("PhiloiWebApp.Models.UserInterest", b =>
