@@ -19,7 +19,7 @@ namespace PhiloiWebApp.Models
         public double Latitude { get; set; }
         public string ImgUrl { get; set; }
         [NotMapped]
-        public List<string> Interests { get; set; }
+        public List<UserInterest> Interests { get; set; }
 
         public User()
         {
