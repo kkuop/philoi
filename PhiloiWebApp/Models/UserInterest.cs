@@ -16,6 +16,7 @@ namespace PhiloiWebApp.Models
         public int InterestId { get; set; }
         public Interests Interest { get; set; }
         public int Weight { get; set; }
+        //public string Name { get; set; }
         public UserInterest()
         {
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -73,6 +74,8 @@ namespace PhiloiWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                user.IdentityUserId = userId;
                 _repo.User.Create(user);
                 _repo.Save();
                 return RedirectToAction(nameof(Index));
@@ -80,15 +83,11 @@ namespace PhiloiWebApp.Controllers
             return View(user);
         }
 
-        // GET: Users/Edit/5
-        public IActionResult Edit(int? id)
+        // GET: Users/Edit
+        public IActionResult Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = _repo.User.FindByCondition(u => u.UserId == id).SingleOrDefault();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _repo.User.FindByCondition(u => u.IdentityUserId == userId).SingleOrDefault();
             if (user == null)
             {
                 return NotFound();
