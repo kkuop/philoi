@@ -12,6 +12,18 @@ namespace PhiloiWebApp.Data
         private IUserRepository _user;
         private IInterestRepository _interest;
         private ICategoryRepository _category;
+        private IUserInterestRepository _userInterest;
+        public IUserInterestRepository UserInterest
+        {
+            get
+            {
+                if(_userInterest == null)
+                {
+                    _userInterest = new UserInterestRepository(_context);
+                }
+                return _userInterest;
+            }
+        }
         public IUserRepository User
         {
             get

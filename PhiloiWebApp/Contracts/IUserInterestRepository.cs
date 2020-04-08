@@ -1,4 +1,4 @@
-﻿using PhiloiWebApp.JSON_Classes;
+﻿using PhiloiWebApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace PhiloiWebApp.Contracts
 {
-    public interface IInterestService
+    public interface IUserInterestRepository : IRepositoryBase<UserInterest>
     {
-        Task<InterestJson> GetActivities();
     }
 }
