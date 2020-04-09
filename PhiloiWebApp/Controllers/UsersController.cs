@@ -19,11 +19,12 @@ namespace PhiloiWebApp.Controllers
     {
         private readonly IRepositoryWrapper _repo;
         private IInterestService _interest;
-
-        public UsersController(IRepositoryWrapper repo, IInterestService interest)
+        private readonly LocationService _locationService;
+        public UsersController(IRepositoryWrapper repo, IInterestService interest, LocationService locationService)
         {
             _repo = repo;
             _interest = interest;
+            _locationService = locationService;
         }
 
         public async Task<IActionResult> Index(User user)
@@ -168,8 +169,15 @@ namespace PhiloiWebApp.Controllers
             }
             return false;
         }
+       /* public bool userWithinRange(User user1,User user2)
+        {
+            var range =_locationService.GetDistance(user1, user2);
 
 
+
+
+        }
+        */
 
 
     }
