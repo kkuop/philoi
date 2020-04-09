@@ -43,12 +43,12 @@
     </div>*@
 
     <!-- Navbar on small screens -->
-    <div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium w3-large">
+    @*<div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium w3-large">
         <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
         <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 2</a>
         <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 3</a>
         <a href="#" class="w3-bar-item w3-button w3-padding-large">My Profile</a>
-    </div>
+    </div>*@
 
     <!-- Page Container -->
     <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
@@ -60,12 +60,13 @@
                 <div class="w3-card w3-round w3-white">
                     <div class="w3-container">
                         <h4 class="w3-center">My Profile</h4>
-                        <p class="w3-center"><img src="/w3images/avatar3.png" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
+                        <p class="w3-center"><img src="@Model.ImgUrl" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
                         <hr>
                         <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i> Designer, UI</p>
-                        <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> London, UK</p>
-                        <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> April 1, 1988</p>
-                        <a asp-action="Edit">Edit My Profile</a>
+                        <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> @Model.ZipCode</p>
+                        <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> @Model.DateOfBirth.ToShortDateString()</p>
+                        <p><a asp-action="Edit">Edit My Profile</a></p>
+                        <p><a asp-action="ViewInterests">View My Interests</a></p>
                     </div>
                 </div>
                 <br>
@@ -128,7 +129,7 @@
                         <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Interests)
+                                        
                                     </th>
                                 </tr>
                             </thead>

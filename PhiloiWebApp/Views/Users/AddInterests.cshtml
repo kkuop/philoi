@@ -1,0 +1,71 @@
+﻿@model PhiloiWebApp.Models.UserInterest
+@{
+    ViewData["Title"] = "Edit Interests";
+  //  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<title>Add Interests</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<style>
+    html, body, h1, h2, h3, h4, h5 {
+        font-family: "Open Sans", sans-serif
+    }
+</style>
+<h1>Add an Interest</h1>
+
+<body class="w3-theme-l5">
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="AddInterests" autocomplete="off" class="form-inline">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col">
+                        <input class="form-control" id="searchBox" placeholder="Search for an interest..." name="search" onchange="setEdit()" />
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @id = "searchBoxName", @type="hidden" } })
+                        <input type="submit" value="Add" class="btn btn-primary" />
+                    </div>
+                </div>
+            </form>
+            <div style="height:15px;"></div>
+            <div id="response">
+                
+            </div>
+            <div style="height:15px;"></div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Your Interests
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <a asp-action="ViewInterests"><h5>Edit/Remove an Interest</h5></a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.UserInterests)
+                {
+                    <tr>
+                        <td>
+                            @Html.Raw(item.Name)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+<script src="~/js/edit.js"></script>
+</body>
+    
