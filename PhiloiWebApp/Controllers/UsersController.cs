@@ -20,11 +20,13 @@ namespace PhiloiWebApp.Controllers
     {
         private readonly IRepositoryWrapper _repo;
         private readonly IInterestService _interest;
+        private readonly IEventService _event;
 
-        public UsersController(IRepositoryWrapper repo, IInterestService interest)
+        public UsersController(IRepositoryWrapper repo, IInterestService interest, IEventService event)
         {
             _repo = repo;
             _interest = interest;
+            _event = event;
         }
 
         public async Task<IActionResult> Index(User user)
@@ -39,6 +41,8 @@ namespace PhiloiWebApp.Controllers
             ViewBag.Activities = await _interest.GetActivities();
 
             var interests = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId);
+
+            var event = await _event.GetEvents();
 
             //var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
 
