@@ -44,7 +44,7 @@ namespace CustomWebApi.Controllers
             return Ok(movie);
         }
 
-        [HttpGet]
+        [HttpGet("{input}")]
         public IActionResult Get(string input)
         {
             var movie = _repo.Movie.FindByCondition(a => a.Name.Contains(input));
