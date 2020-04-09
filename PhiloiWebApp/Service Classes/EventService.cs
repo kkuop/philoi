@@ -18,7 +18,7 @@ namespace PhiloiWebApp.Service_Classes
         public async Task<EventService> GetEvents()
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync($"https://www.eventbriteapi.com/v3?token={ApiKey.EventbriteKey}");
+            HttpResponseMessage response = await client.GetAsync($"https://www.eventbriteapi.com/v3/users/me/?token={ApiKey.EventbriteKey}");
             if (response.IsSuccessStatusCode)
             {
                 string json = response.Content.ReadAsStringAsync().Result;
