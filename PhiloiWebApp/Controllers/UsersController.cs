@@ -20,21 +20,21 @@ namespace PhiloiWebApp.Controllers
     {
         private readonly IRepositoryWrapper _repo;
         private readonly IInterestService _interest;
-        private readonly IEventService _event;
+        private readonly IEventService _events;
 
-        public UsersController(IRepositoryWrapper repo, IInterestService interest, IEventService event)
+        public UsersController(IRepositoryWrapper repo, IInterestService interest, IEventService events)
         {
             _repo = repo;
             _interest = interest;
-            _event = event;
+            _events = events;
         }
 
         public async Task<IActionResult> Index(User user)
         {
-            
+
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
-            if(foundUser == null)
+            if (foundUser == null)
             {
                 return RedirectToAction(nameof(Create));
             }
@@ -42,7 +42,7 @@ namespace PhiloiWebApp.Controllers
 
             var interests = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId);
 
-            var event = await _event.GetEvents();
+            var events = await _events.GetEvents();
 
             //var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
 
@@ -50,6 +50,7 @@ namespace PhiloiWebApp.Controllers
 
             return View(foundUser);
         }
+       
       
 
         // GET: Users/Details/5
