@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,24 +20,35 @@ namespace PhiloiWebApp.Controllers
     {
         private readonly IRepositoryWrapper _repo;
         private readonly IInterestService _interest;
+        private readonly IEventService _event;
 
-        public UsersController(IRepositoryWrapper repo, IInterestService interest)
+        public UsersController(IRepositoryWrapper repo, IInterestService interest, IEventService event)
         {
             _repo = repo;
             _interest = interest;
+            _event = event;
         }
 
         public async Task<IActionResult> Index(User user)
         {
+            
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            if(foundUser == null)
+            {
+                return RedirectToAction(nameof(Create));
+            }
             ViewBag.Activities = await _interest.GetActivities();
 
             var interests = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId);
 
-            var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
+            var event = await _event.GetEvents();
 
-            user.Interests = interestToSendToView.ToList();
+            //var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
 
-            return View(user);
+            //user.Interests = interests.ToList();
+
+            return View(foundUser);
         }
       
 
@@ -68,11 +80,13 @@ namespace PhiloiWebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("UserId,FirstName,LastName,Email,ZipCode,Longitude,Latitude")] User user)
+        public IActionResult Create([Bind("UserId,FirstName,LastName,DateOfBirth,Occupation,Email,ZipCode,Longitude,Latitude")] User user)
 
         {
             if (ModelState.IsValid)
             {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                user.IdentityUserId = userId;
                 _repo.User.Create(user);
                 _repo.Save();
                 return RedirectToAction(nameof(Index));
@@ -80,15 +94,11 @@ namespace PhiloiWebApp.Controllers
             return View(user);
         }
 
-        // GET: Users/Edit/5
-        public IActionResult Edit(int? id)
+        // GET: Users/Edit
+        public IActionResult Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = _repo.User.FindByCondition(u => u.UserId == id).SingleOrDefault();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _repo.User.FindByCondition(u => u.IdentityUserId == userId).SingleOrDefault();
             if (user == null)
             {
                 return NotFound();
@@ -96,14 +106,16 @@ namespace PhiloiWebApp.Controllers
             return View(user);
         }
 
-        // POST: Users/Edit/5
+        // POST: Users/Edit
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("UserId,FirstName,LastName,Email,ZipCode")] User user)
+        public IActionResult Edit([Bind("UserId,FirstName,LastName,DateOfBirth,Occupation,Email,ZipCode,Address,Longitude,Latitude,ImgUrl,IdentityUserId")] User user)
         {
-            if (id != user.UserId)
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(u => u.UserId == user.UserId).SingleOrDefault();
+            if (userId != foundUser.IdentityUserId)
             {
                 return NotFound();
             }
@@ -131,53 +143,124 @@ namespace PhiloiWebApp.Controllers
             }
             return View(user);
         }
-        // GET: Users/EditInterests/5
-        public IActionResult EditInterests(int? id)
+        // GET: Users/EditInterests
+        public async Task<IActionResult> AddInterests()
         {
-            if (id == null)
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            ViewBag.UserInterests = _repo.UserInterest.FindAll().Where(a => a.UserId == foundUser.UserId);
+            if (foundUser == null)
             {
                 return NotFound();
             }
-
-            var user = _repo.User.FindByCondition(u => u.UserId == id).SingleOrDefault();
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return View(user);
+            
+            ViewBag.Activities = await _interest.GetActivities();
+            return View();
         }
-        // POST: Users/EditInterests/5
+        // POST: Users/EditInterests/String
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditInterests(int id, [Bind("Interests")] User user)
+        public async Task<IActionResult> AddInterests(UserInterest userInterest)
         {
-            if (id != user.UserId)
+            //UserInterest userInterest = new UserInterest();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            var activities = await _interest.GetActivities();
+            for (int i = 0; i < activities.Length; i++)
+            {
+                if(activities[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+
+                            //userInterest.Name = searchBox;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return NotFound();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return RedirectToAction(nameof(AddInterests));
+                    }
+                }
+            }
+            return RedirectToAction(nameof(AddInterests));
+        }
+
+        // GET: UserInterest/ViewInterests
+        [HttpGet]
+        public IActionResult ViewInterests()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            var userInterests = _repo.UserInterest.FindAll().Where(a => a.UserId == foundUser.UserId);
+            if (foundUser == null)
             {
                 return NotFound();
             }
+            return View(userInterests);
+        }
 
-            if (ModelState.IsValid)
+        // GET: Users/EditInterest/5
+        [HttpGet]
+        public IActionResult EditInterest(int id)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            var foundUserInterest = _repo.UserInterest.FindByCondition(a => a.UserInterestId == id).SingleOrDefault();
+            if (foundUserInterest == null)
             {
-
-                try
-                {
-                    _repo.User.Update(user);
-                    _repo.Save();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.UserId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            return View(user);
+            return View(foundUserInterest);
+        }
+
+        // POST: Users/EditInterest/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditInterest(int id, UserInterest userInterest)
+        {
+            var foundUserInterest = _repo.UserInterest.FindByCondition(a => a.UserInterestId == id).SingleOrDefault();
+            foundUserInterest.Weight = userInterest.Weight;
+            _repo.UserInterest.Update(foundUserInterest);
+            _repo.Save();
+            return RedirectToAction(nameof(ViewInterests));
+        }
+
+        // GET: Users/RemoveInterest/5
+        [HttpGet]
+        public IActionResult RemoveInterest(int id)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            var foundUserInterest = _repo.UserInterest.FindByCondition(a => a.UserInterestId == id).SingleOrDefault();
+            if (foundUserInterest == null)
+            {
+                return NotFound();
+            }
+            return View(foundUserInterest);
+        }
+
+        // POST: UserInterest/RemoveInterest/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveInterest(int id, UserInterest userInterest)
+        {
+            var foundUserInterest = _repo.UserInterest.FindByCondition(a => a.UserInterestId == id).SingleOrDefault();
+            _repo.UserInterest.Delete(foundUserInterest);
+            _repo.Save();
+            return RedirectToAction(nameof(ViewInterests));
         }
 
         [HttpPost]
@@ -233,7 +316,7 @@ namespace PhiloiWebApp.Controllers
             return false;
         }
 
-        public async Task<IActionResult> Search(string searchString)
+        public IActionResult Search(string searchString)
         {
             /*var users = _repo.User.FindByCondition(u => u.ListOfInterests.Contains(searchString));
             if (!String.IsNullOrEmpty(searchString))

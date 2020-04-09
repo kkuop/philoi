@@ -44,6 +44,17 @@ namespace CustomWebApi.Controllers
             return Ok(sport);
         }
 
+        [HttpGet("{input}")]
+        public IActionResult Get(string input)
+        {
+            var sport = _repo.Sport.FindByCondition(a => a.Name.Contains(input));
+            if(sport == null)
+            {
+                return NotFound();
+            }
+            return Ok(sport);
+        }
+
         // PUT: api/Sports/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.

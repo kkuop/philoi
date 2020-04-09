@@ -1,0 +1,43 @@
+﻿@model IEnumerable<PhiloiWebApp.Models.UserInterest>
+
+@{
+    ViewData["Title"] = "ViewInterests";
+}
+
+<h1>View Interests</h1>
+
+<p>
+    <a asp-action="AddInterests">Add an Interest</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Weight)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Weight)
+            </td>
+
+            <td>
+                @Html.ActionLink("Edit", "EditInterest", new {  id=item.UserInterestId  }) |
+                
+                @Html.ActionLink("Delete", "RemoveInterest", new {  id=item.UserInterestId  })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

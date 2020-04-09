@@ -31,7 +31,7 @@ namespace CustomWebApi.Controllers
         }
 
         // GET: api/Fandoms/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
             var fandom = _repo.Fandom.FindByCondition(a => a.FandomId == id).SingleOrDefault(); ;
@@ -41,6 +41,17 @@ namespace CustomWebApi.Controllers
                 return NotFound();
             }
 
+            return Ok(fandom);
+        }
+
+        [HttpGet("{input}")]
+        public IActionResult Get(string input)
+        {
+            var fandom = _repo.Fandom.FindByCondition(a => a.Name.Contains(input));
+            if(fandom == null)
+            {
+                return NotFound();
+            }
             return Ok(fandom);
         }
 

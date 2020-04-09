@@ -31,7 +31,7 @@ namespace CustomWebApi.Controllers
         }
 
         // GET: api/Music/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
             var music = _repo.Music.FindByCondition(a => a.MusicId == id).SingleOrDefault();
@@ -41,6 +41,17 @@ namespace CustomWebApi.Controllers
                 return NotFound();
             }
 
+            return Ok(music);
+        }
+
+        [HttpGet("{input}")]
+        public IActionResult Get(string input)
+        {
+            var music = _repo.Music.FindByCondition(a => a.Name.Contains(input));
+            if(music == null)
+            {
+                return NotFound();
+            }
             return Ok(music);
         }
 
