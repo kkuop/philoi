@@ -21,12 +21,14 @@ namespace PhiloiWebApp.Controllers
         private readonly IRepositoryWrapper _repo;
         private readonly IInterestService _interest;
         private readonly IEventService _events;
+        private readonly LocationService _locationService;
 
-        public UsersController(IRepositoryWrapper repo, IInterestService interest, IEventService events)
+        public UsersController(IRepositoryWrapper repo, IInterestService interest, IEventService events, LocationService locationService)
         {
             _repo = repo;
             _interest = interest;
             _events = events;
+            _locationService = locationService;
         }
 
         public async Task<IActionResult> Index(User user)
@@ -328,6 +330,61 @@ namespace PhiloiWebApp.Controllers
             }
             return View(await users.ToListAsync());*/
             return View();
+        }
+
+        public async Task<bool> userWithinRange(User user1, User user2)
+        {
+            double counter = 0;
+            int limit = 50;
+
+            var range = await _locationService.GetDistance(user1, user2);
+            foreach (var leg in range.routes[0].legs)
+            {
+                counter = counter + leg.distance.value;
+            }
+            if (counter < limit)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void MatchingInterests(User user1)
+        {
+            int threshold1 = 0;
+            int threshold2 = 5;
+            int threshold3 = 10;
+            var lvl1 = new List<User>();
+            var lvl2 = new List<User>();
+            var lvl3 = new List<User>();
+
+            var userIntrests = _repo.UserInterest.FindByCondition(s => s.UserId == user1.UserId).ToList();
+            int points;
+            var userlist = _repo.User.FindByCondition(s => s.UserId != user1.UserId).ToList();
+            foreach (var user in userlist)
+            {
+                var notuserList = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId).ToList();
+                var intersection = userIntrests.Intersect(notuserList);
+                if (intersection.Count() > 0)
+                {
+                    foreach (var item in intersection)
+                    {
+                        points = 0;
+                        points = points + item.Weight + 1;
+                        if (points > threshold1 && points < threshold2) { lvl1.Add(user); }
+                        else if (points > threshold2 && points < threshold3) { lvl2.Add(user); }
+                        else if (points > threshold3) { lvl3.Add(user); }
+
+                    }
+
+
+                }
+            }
+            ViewBag.KindaFreinds = lvl1;
+            ViewBag.GoodFreinds = lvl2;
+            ViewBag.BestFreinds = lvl3;
+
         }
 
         public bool CheckIfActivity(Activities[] activities, UserInterest userInterest, User foundUser)
