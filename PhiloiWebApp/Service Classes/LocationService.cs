@@ -10,8 +10,7 @@ namespace PhiloiWebApp.Service_Classes
 {
     public class LocationService
     {
-
-       public class Rootobject
+        public class Rootobject
         {
             public Geocoded_Waypoints[] geocoded_waypoints { get; set; }
             public Route[] routes { get; set; }
@@ -144,8 +143,8 @@ namespace PhiloiWebApp.Service_Classes
             user1.Address = "3718 n 7th st, Milwaukee, Wi";
             user2.Address = "4845 n Sherman blvd, Milwauke, WI";
             var range = GetDistance(user1, user2);
-            
-           
+
+
         }
 
         public async Task<LocationService.Rootobject> GetDistance(User user1, User user2)
@@ -163,3 +162,4 @@ namespace PhiloiWebApp.Service_Classes
 
     }
 }
+

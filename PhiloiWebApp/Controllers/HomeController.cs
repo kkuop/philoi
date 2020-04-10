@@ -14,7 +14,6 @@ namespace PhiloiWebApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly LocationService _locationService;
-        
         public HomeController(ILogger<HomeController> logger,LocationService locationService)
         {
             _logger = logger;

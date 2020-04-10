@@ -19,18 +19,15 @@ namespace PhiloiWebApp.Controllers
     public class UsersController : Controller
     {
         private readonly IRepositoryWrapper _repo;
-
-       
-        private readonly LocationService _locationService;
-        
-
         private readonly IInterestService _interest;
+        private readonly IEventService _events;
+        private readonly LocationService _locationService;
 
-        public UsersController(IRepositoryWrapper repo, IInterestService interest, LocationService locationService)
-
+        public UsersController(IRepositoryWrapper repo, IInterestService interest, IEventService events, LocationService locationService)
         {
             _repo = repo;
             _interest = interest;
+            _events = events;
             _locationService = locationService;
         }
 
@@ -39,20 +36,25 @@ namespace PhiloiWebApp.Controllers
             
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
-            if(foundUser == null)
+            if (foundUser == null)
             {
                 return RedirectToAction(nameof(Create));
             }
-            ViewBag.Activities = await _interest.GetActivities();
 
-            var interests = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId);
+            ViewBag.Activities = await _interest.GetActivities();
+           // MatchingInterests(foundUser);
+
+            var interests = _repo.UserInterest.FindByCondition(s => s.UserId == foundUser.UserId);
+
+            var events = await _events.GetEvents();
 
             //var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
 
             //user.Interests = interests.ToList();
-            MatchingInterests(user);
+
             return View(foundUser);
         }
+       
       
 
         // GET: Users/Details/5
@@ -160,43 +162,45 @@ namespace PhiloiWebApp.Controllers
             ViewBag.Activities = await _interest.GetActivities();
             return View();
         }
+
         // POST: Users/EditInterests/String
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddInterests(UserInterest userInterest)
         {
+            bool returnView = false;
             //UserInterest userInterest = new UserInterest();
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
             var activities = await _interest.GetActivities();
-            for (int i = 0; i < activities.Length; i++)
+            var fandoms = await _interest.GetFandoms();
+            var movies = await _interest.GetMovies();
+            var music = await _interest.GetMusic();
+            var sports = await _interest.GetSports();
+            returnView = CheckIfActivity(activities, userInterest, foundUser);
+            if(returnView)
             {
-                if(activities[i].name == userInterest.Name)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        try
-                        {
-                            userInterest.UserId = foundUser.UserId;
-
-                            //userInterest.Name = searchBox;
-                            _repo.UserInterest.Create(userInterest);
-                            _repo.Save();
-                        }
-                        catch (DbUpdateConcurrencyException)
-                        {
-                            if (!UserExists(foundUser.UserId))
-                            {
-                                return NotFound();
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                        return RedirectToAction(nameof(AddInterests));
-                    }
-                }
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfFandom(fandoms, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfMovie(movies, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfMusic(music, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfSport(sports, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
             }
             return RedirectToAction(nameof(AddInterests));
         }
@@ -318,62 +322,6 @@ namespace PhiloiWebApp.Controllers
             }
             return false;
         }
-        [HttpGet, ActionName("TBD")]
-        //Algorythimn level 1
-        public async Task<bool> userWithinRange(User user1, User user2)
-        { double counter=0;
-            int limit = 50;
-            
-            var range = await _locationService.GetDistance(user1, user2);
-            foreach(var leg in range.routes[0].legs)
-            {
-                counter = counter + leg.distance.value;
-            }
-            if (counter < limit)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public void MatchingInterests(User user1)
-        { int threshold1 = 0;
-            int threshold2 = 5;
-            int threshold3 = 10;
-          var lvl1 = new List<User>();
-            var lvl2 = new List<User>();
-            var lvl3 = new List<User>();
-
-            var userIntrests = _repo.UserInterest.FindByCondition(s => s.UserId == user1.UserId).ToList();
-            int points;
-            var userlist = _repo.User.FindByCondition(s => s.UserId != user1.UserId).ToList();
-            foreach(var user in userlist) 
-            {var notuserList= _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId).ToList();
-                var intersection = userIntrests.Intersect(notuserList);
-                if (intersection.Count() > 0) 
-                { foreach(var item in intersection) 
-                    {
-                         points = 0;
-                        points = points + item.Weight + 1;
-                        if (points>threshold1&&points<threshold2) { lvl1.Add(user); }
-                         else if(points > threshold2 && points < threshold3) { lvl2.Add(user); }
-                       else if(points > threshold3) { lvl3.Add(user); }
-
-                    }
-                               
-              
-                }
-            }
-            ViewBag.KindaFreinds = lvl1;
-            ViewBag.GoodFreinds = lvl2;
-            ViewBag.BestFreinds = lvl3;
-            
-        }
-        
-
-
-
 
         public IActionResult Search(string searchString)
         {
@@ -386,5 +334,217 @@ namespace PhiloiWebApp.Controllers
             return View();
         }
 
+        public async Task<IList<User>> userWithinRange(User user1)
+        {
+            var usersInRange = new List<User>();
+            var userlist = _repo.User.FindByCondition(s => s.UserId != user1.UserId).ToList();
+            double counter = 0;
+            int limit = 50;
+            foreach (var user in userlist) {
+                var range = await _locationService.GetDistance(user1,user);
+                foreach (var leg in range.routes[0].legs)
+                {
+                    counter = counter + leg.distance.value;
+                }
+                if (counter < limit)
+                {
+                    usersInRange.Add(user);
+                }
+            }
+            return usersInRange;
+        }
+
+        public async void MatchingInterests(User user1)
+        {
+            int threshold1 = 0;
+            int threshold2 = 5;
+            int threshold3 = 10;
+            var lvl1 = new List<User>();
+            var lvl2 = new List<User>();
+            var lvl3 = new List<User>();
+
+            var userIntrests = _repo.UserInterest.FindByCondition(s => s.UserId == user1.UserId).ToList();
+            int points;
+            var userlist = await userWithinRange(user1);
+            foreach (var user in userlist)
+            {
+                var notuserList = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId).ToList();
+                var intersection = userIntrests.Intersect(notuserList);
+                if (intersection.Count() > 0)
+                {
+                    foreach (var item in intersection)
+                    {
+                        points = 0;
+                        points = points + item.Weight + 1;
+                        if (points > threshold1 && points < threshold2) { lvl1.Add(user); }
+                        else if (points > threshold2 && points < threshold3) { lvl2.Add(user); }
+                        else if (points > threshold3) { lvl3.Add(user); }
+
+                    }
+
+
+                }
+            }
+            ViewBag.KindaFreinds = lvl1;
+            ViewBag.GoodFreinds = lvl2;
+            ViewBag.BestFreinds = lvl3;
+
+        }
+
+        public bool CheckIfActivity(Activities[] activities, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < activities.Length; i++)
+            {
+                if (activities[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfFandom(Fandoms[] fandoms, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < fandoms.Length; i++)
+            {
+                if (fandoms[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfMovie(Movies[] movies, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < movies.Length; i++)
+            {
+                if (movies[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfMusic(Music[] music, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < music.Length; i++)
+            {
+                if (music[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfSport(Sports[] sports, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < sports.Length; i++)
+            {
+                if (sports[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 }
