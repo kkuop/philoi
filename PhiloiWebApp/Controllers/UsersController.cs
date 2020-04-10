@@ -319,6 +319,7 @@ namespace PhiloiWebApp.Controllers
             return false;
         }
         [HttpGet, ActionName("TBD")]
+        //Algorythimn level 1
         public async Task<bool> userWithinRange(User user1, User user2)
         { double counter=0;
             int limit = 50;
@@ -336,8 +337,39 @@ namespace PhiloiWebApp.Controllers
             return false;
         }
 
+        public void MatchingInterests(User user1)
+        { int threshold1 = 0;
+            int threshold2 = 5;
+            int threshold3 = 10;
+          var lvl1 = new List<User>();
+            var lvl2 = new List<User>();
+            var lvl3 = new List<User>();
 
-        
+            var userIntrests = _repo.UserInterest.FindByCondition(s => s.UserId == user1.UserId).ToList();
+            int points;
+            var userlist = _repo.User.FindByCondition(s => s.UserId != user1.UserId).ToList();
+            foreach(var user in userlist) 
+            {var notuserList= _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId).ToList();
+                var intersection = userIntrests.Intersect(notuserList);
+                if (intersection.Count() > 0) 
+                { foreach(var item in intersection) 
+                    {
+                         points = 0;
+                        points = points + item.Weight + 1;
+                        if (points>threshold1&&points<threshold2) { lvl1.Add(user); }
+                        if (points > threshold2 && points < threshold3) { lvl2.Add(user); }
+                        if (points > threshold3) { lvl3.Add(user); }
+
+                    }
+                               
+              
+                }
+            }
+            ViewBag.KindaFreinds = lvl1;
+            ViewBag.GoodFreinds = lvl2;
+            ViewBag.BestFreinds = lvl3;
+            
+        }
         
 
 

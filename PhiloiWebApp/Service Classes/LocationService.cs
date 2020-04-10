@@ -144,6 +144,7 @@ namespace PhiloiWebApp.Service_Classes
             user1.Address = "3718 n 7th st, Milwaukee, Wi";
             user2.Address = "4845 n Sherman blvd, Milwauke, WI";
             var range = GetDistance(user1, user2);
+            
            
         }
 
