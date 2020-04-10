@@ -485,7 +485,5 @@ namespace PhiloiWebApp.Controllers
             }
             return false;
         }
-
-        //algorithm here
     }
 }
