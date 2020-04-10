@@ -50,7 +50,7 @@ namespace PhiloiWebApp.Controllers
             //var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
 
             //user.Interests = interests.ToList();
-
+            MatchingInterests(user);
             return View(foundUser);
         }
       
@@ -357,8 +357,8 @@ namespace PhiloiWebApp.Controllers
                          points = 0;
                         points = points + item.Weight + 1;
                         if (points>threshold1&&points<threshold2) { lvl1.Add(user); }
-                        if (points > threshold2 && points < threshold3) { lvl2.Add(user); }
-                        if (points > threshold3) { lvl3.Add(user); }
+                         else if(points > threshold2 && points < threshold3) { lvl2.Add(user); }
+                       else if(points > threshold3) { lvl3.Add(user); }
 
                     }
                                
