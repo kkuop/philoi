@@ -1,46 +1,52 @@
-﻿@model IEnumerable<PhiloiWebApp.Models.User>
+﻿@model PhiloiWebApp.Models.User
 @{
     ViewData["Title"] = "Search";
 }
-<!DOCTYPE html>
 
-<title>Philoi Search Page</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
-<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="~/css/bootstrap.min.css" />
-<style>
-    html, body, h1, h2, h3, h4, h5 {
-        font-family: "Open Sans", sans-serif
-    }
-</style>
-<h1>Search</h1>
-<p>
-    <a asp-action="Search">Search</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ZipCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImgUrl)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <a asp-action="Index" asp-route-id="@User">Home</a>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<h1>Search by Interest</h1>
+<div>
+    <form asp-action="Search" class="form-inline" autocomplete="off">
+        <input class="form-control" name="SearchValue" />
+        <input type="submit" class="btn btn-primary" value="Go" />
+    </form>
+    <div style="height:10px;"></div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Image
+                    </th>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        ZIP
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.userMatches != null)
+                {
+                    foreach (var item in Model.userMatches)
+                    {
+                        <tr>
+                            <td><img src="@Html.Raw(item.ImgUrl)" height="15" alt="User Image" /></td>
+                            <td>@Html.Raw(item.FirstName)</td>
+                            <td>@Html.Raw(item.ZipCode)</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>No results!</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

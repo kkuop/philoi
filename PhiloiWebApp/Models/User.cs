@@ -26,8 +26,10 @@ namespace PhiloiWebApp.Models
         [ForeignKey("IdentityUser")]
         public string IdentityUserId { get; set; }
         public IdentityUser IdentityUser { get; set; }
+        public string SearchTerm { get; set; }
 
-
+        [NotMapped]
+        public List<User> userMatches { get; set; }
 
         public User()
         {
