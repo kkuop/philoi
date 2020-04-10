@@ -158,43 +158,45 @@ namespace PhiloiWebApp.Controllers
             ViewBag.Activities = await _interest.GetActivities();
             return View();
         }
+
         // POST: Users/EditInterests/String
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddInterests(UserInterest userInterest)
         {
+            bool returnView = false;
             //UserInterest userInterest = new UserInterest();
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
             var activities = await _interest.GetActivities();
-            for (int i = 0; i < activities.Length; i++)
+            var fandoms = await _interest.GetFandoms();
+            var movies = await _interest.GetMovies();
+            var music = await _interest.GetMusic();
+            var sports = await _interest.GetSports();
+            returnView = CheckIfActivity(activities, userInterest, foundUser);
+            if(returnView)
             {
-                if(activities[i].name == userInterest.Name)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        try
-                        {
-                            userInterest.UserId = foundUser.UserId;
-
-                            //userInterest.Name = searchBox;
-                            _repo.UserInterest.Create(userInterest);
-                            _repo.Save();
-                        }
-                        catch (DbUpdateConcurrencyException)
-                        {
-                            if (!UserExists(foundUser.UserId))
-                            {
-                                return NotFound();
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                        return RedirectToAction(nameof(AddInterests));
-                    }
-                }
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfFandom(fandoms, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfMovie(movies, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfMusic(music, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfSport(sports, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
             }
             return RedirectToAction(nameof(AddInterests));
         }
@@ -326,6 +328,162 @@ namespace PhiloiWebApp.Controllers
             }
             return View(await users.ToListAsync());*/
             return View();
+        }
+
+        public bool CheckIfActivity(Activities[] activities, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < activities.Length; i++)
+            {
+                if (activities[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfFandom(Fandoms[] fandoms, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < fandoms.Length; i++)
+            {
+                if (fandoms[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfMovie(Movies[] movies, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < movies.Length; i++)
+            {
+                if (movies[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfMusic(Music[] music, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < music.Length; i++)
+            {
+                if (music[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfSport(Sports[] sports, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < sports.Length; i++)
+            {
+                if (sports[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

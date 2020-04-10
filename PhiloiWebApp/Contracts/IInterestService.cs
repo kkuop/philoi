@@ -9,5 +9,9 @@ namespace PhiloiWebApp.Contracts
     public interface IInterestService
     {
         Task<Activities[]> GetActivities();
+        Task<Fandoms[]> GetFandoms();
+        Task<Movies[]> GetMovies();
+        Task<Music[]> GetMusic();
+        Task<Sports[]> GetSports();
     }
 }
