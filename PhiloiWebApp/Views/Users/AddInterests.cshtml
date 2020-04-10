@@ -6,9 +6,9 @@
 <h1>Add an Interest</h1>
 
 <div>
-    <div >
-        <div >
-            <select class="form-control" id="catDropDown" onchange="displaySearchBox()">
+    <div class="row">
+        <div class="col-5">
+            <select class="form-control " id="catDropDown" onchange="displaySearchBox()">
                 <option value="" disabled selected>Select an option...</option>
                 <option value="Activities">Activities</option>
                 <option value="Fandoms">Fandoms</option>
@@ -16,6 +16,10 @@
                 <option value="Music">Music</option>
                 <option value="Sports">Sports</option>
             </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
             <div style="height:15px;"></div>
             <div id="activitiesBox" class="invis">
                 <form asp-action="AddInterests" autocomplete="off" class="form-inline">

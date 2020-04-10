@@ -33,7 +33,7 @@ namespace PhiloiWebApp.Controllers
 
         public async Task<IActionResult> Index(User user)
         {
-            
+
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
             if (foundUser == null)
@@ -323,15 +323,35 @@ namespace PhiloiWebApp.Controllers
             return false;
         }
 
-        public IActionResult Search(string searchString)
+
+        [HttpGet]
+        public IActionResult Search(User user)
         {
-            /*var users = _repo.User.FindByCondition(u => u.ListOfInterests.Contains(searchString));
-            if (!String.IsNullOrEmpty(searchString))
+            if(user.IdentityUserId != null)
             {
-            users = users.Where(s => s.ListOfInterests.Contains(searchString));
+                var users = _repo.UserInterest.FindByCondition(a => a.Name.Contains(user.SearchTerm)).Include(a => a.User).Select(a => a.User);
+                user.userMatches = users.ToList();
+                user.SearchTerm = null;
+                _repo.User.Update(user);
+                _repo.Save();
+                return View(user);
             }
-            return View(await users.ToListAsync());*/
-            return View();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            
+            return View(foundUser);
+        }
+
+        [HttpPost]
+        public IActionResult Search(SearchForm searchForm)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            user.SearchTerm = searchForm.SearchValue;
+            
+            _repo.User.Update(user);
+            _repo.Save();
+            return RedirectToAction("Search", user);
         }
 
         public async Task<IList<User>> userWithinRange(User user1)
@@ -354,7 +374,9 @@ namespace PhiloiWebApp.Controllers
             return usersInRange;
         }
 
+
         public async void MatchingInterests(User user1)
+
         {
             int threshold1 = 0;
             int threshold2 = 5;
@@ -362,7 +384,6 @@ namespace PhiloiWebApp.Controllers
             var lvl1 = new List<User>();
             var lvl2 = new List<User>();
             var lvl3 = new List<User>();
-
             var userIntrests = _repo.UserInterest.FindByCondition(s => s.UserId == user1.UserId).ToList();
             int points;
             var userlist = await userWithinRange(user1);
@@ -378,17 +399,14 @@ namespace PhiloiWebApp.Controllers
                         points = points + item.Weight + 1;
                         if (points > threshold1 && points < threshold2) { lvl1.Add(user); }
                         else if (points > threshold2 && points < threshold3) { lvl2.Add(user); }
-                        else if (points > threshold3) { lvl3.Add(user); }
-
+                        else if (points > threshold3) { lvl3.Add(user); 
+                        }
                     }
-
-
                 }
             }
             ViewBag.KindaFreinds = lvl1;
             ViewBag.GoodFreinds = lvl2;
             ViewBag.BestFreinds = lvl3;
-
         }
 
         public bool CheckIfActivity(Activities[] activities, UserInterest userInterest, User foundUser)
