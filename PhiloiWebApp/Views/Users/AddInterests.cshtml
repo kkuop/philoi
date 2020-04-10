@@ -1,0 +1,120 @@
+﻿@model PhiloiWebApp.Models.UserInterest
+@{
+    ViewData["Title"] = "Add Interests";
+}
+
+<h1>Add an Interest</h1>
+
+<div>
+    <div >
+        <div >
+            <select class="form-control" id="catDropDown" onchange="displaySearchBox()">
+                <option value="" disabled selected>Select an option...</option>
+                <option value="Activities">Activities</option>
+                <option value="Fandoms">Fandoms</option>
+                <option value="Movies">Movies</option>
+                <option value="Music">Music</option>
+                <option value="Sports">Sports</option>
+            </select>
+            <div style="height:15px;"></div>
+            <div id="activitiesBox" class="invis">
+                <form asp-action="AddInterests" autocomplete="off" class="form-inline">
+
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" id="searchBox" placeholder="Search for an activity..." name="activity-search" onchange="setEdit('searchBox','searchBoxName')" />
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @id = "searchBoxName", @type = "hidden" } })
+                                <input type="submit" value="Add" class="btn btn-primary" />
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+            <div id="fandomsBox" class="invis">
+                <form asp-action="AddInterests" autocomplete="off" class="form-inline">
+
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" id="fandomSearchBox" placeholder="Search for a fandom..." name="fandom-search" onchange="setEdit('fandomSearchBox','fandomSearchBoxName')" />
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @id = "fandomSearchBoxName", @type = "hidden" } })
+                                <input type="submit" value="Add" class="btn btn-primary" />
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+            <div id="moviesBox" class="invis">
+                <form asp-action="AddInterests" autocomplete="off" class="form-inline">
+
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" id="movieSearchBox" placeholder="Search for a movie..." name="movie-search" onchange="setEdit('movieSearchBox','movieSearchBoxName')" />
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @id = "movieSearchBoxName", @type = "hidden" } })
+                                <input type="submit" value="Add" class="btn btn-primary" />
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+            <div id="musicBox" class="invis">
+                <form asp-action="AddInterests" autocomplete="off" class="form-inline">
+                
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" id="musicSearchBox" placeholder="Search for music..." name="music-search" onchange="setEdit('musicSearchBox','musicSearchBoxName')" />
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @id = "musicSearchBoxName", @type = "hidden" } })
+                                <input type="submit" value="Add" class="btn btn-primary" />
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+            <div id="sportsBox" class="invis">
+                <form asp-action="AddInterests" autocomplete="off" class="form-inline">
+
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" id="sportSearchBox" placeholder="Search for a sport..." name="sport-search" onchange="setEdit('sportSearchBox','sportSearchBoxName')" />
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @id = "sportSearchBoxName", @type = "hidden" } })
+                                <input type="submit" value="Add" class="btn btn-primary" />
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+            <div style="height:15px;"></div>
+            <div id="response">
+
+            </div>
+            <div style="height:15px;"></div>
+        </div>
+    </div>
+    <div >
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <a asp-action="ViewInterests"><h5>Edit/Remove an Interest</h5></a>
+                        
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        Your Interests
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.UserInterests)
+                {
+                    <tr>
+                        <td>
+                            @Html.Raw(item.Name)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+    

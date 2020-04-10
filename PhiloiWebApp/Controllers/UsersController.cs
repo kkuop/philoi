@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,28 +19,38 @@ namespace PhiloiWebApp.Controllers
     public class UsersController : Controller
     {
         private readonly IRepositoryWrapper _repo;
-        private IInterestService _interest;
+        private readonly IInterestService _interest;
+        private readonly IEventService _events;
 
-        public UsersController(IRepositoryWrapper repo, IInterestService interest)
+        public UsersController(IRepositoryWrapper repo, IInterestService interest, IEventService events)
         {
             _repo = repo;
             _interest = interest;
+            _events = events;
         }
 
         public async Task<IActionResult> Index(User user)
         {
+
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            if (foundUser == null)
+            {
+                return RedirectToAction(nameof(Create));
+            }
             ViewBag.Activities = await _interest.GetActivities();
 
             var interests = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId);
 
-            var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
+            var events = await _events.GetEvents();
 
+            //var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
 
-            user.Interests = interestToSendToView.ToList();
+            //user.Interests = interests.ToList();
 
-            return View(user);
+            return View(foundUser);
         }
-
+       
       
 
         // GET: Users/Details/5
@@ -70,11 +81,13 @@ namespace PhiloiWebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("UserId,FirstName,LastName,Email,ZipCode,Longitude,Latitude")] User user)
+        public IActionResult Create([Bind("UserId,FirstName,LastName,DateOfBirth,Occupation,Email,ZipCode,Longitude,Latitude")] User user)
 
         {
             if (ModelState.IsValid)
             {
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                user.IdentityUserId = userId;
                 _repo.User.Create(user);
                 _repo.Save();
                 return RedirectToAction(nameof(Index));
@@ -82,15 +95,11 @@ namespace PhiloiWebApp.Controllers
             return View(user);
         }
 
-        // GET: Users/Edit/5
-        public IActionResult Edit(int? id)
+        // GET: Users/Edit
+        public IActionResult Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = _repo.User.FindByCondition(u => u.UserId == id).SingleOrDefault();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _repo.User.FindByCondition(u => u.IdentityUserId == userId).SingleOrDefault();
             if (user == null)
             {
                 return NotFound();
@@ -98,20 +107,23 @@ namespace PhiloiWebApp.Controllers
             return View(user);
         }
 
-        // POST: Users/Edit/5
+        // POST: Users/Edit
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("UserId,FirstName,LastName,Email,ZipCode,Longitude,Latitude")] User user)
+        public IActionResult Edit([Bind("UserId,FirstName,LastName,DateOfBirth,Occupation,Email,ZipCode,Address,Longitude,Latitude,ImgUrl,IdentityUserId")] User user)
         {
-            if (id != user.UserId)
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(u => u.UserId == user.UserId).SingleOrDefault();
+            if (userId != foundUser.IdentityUserId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                
                 try
                 {
                     _repo.User.Update(user);
@@ -132,6 +144,142 @@ namespace PhiloiWebApp.Controllers
             }
             return View(user);
         }
+        // GET: Users/EditInterests
+        public async Task<IActionResult> AddInterests()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            ViewBag.UserInterests = _repo.UserInterest.FindAll().Where(a => a.UserId == foundUser.UserId);
+            if (foundUser == null)
+            {
+                return NotFound();
+            }
+            
+            ViewBag.Activities = await _interest.GetActivities();
+            return View();
+        }
+
+        // POST: Users/EditInterests/String
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddInterests(UserInterest userInterest)
+        {
+            bool returnView = false;
+            //UserInterest userInterest = new UserInterest();
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            var activities = await _interest.GetActivities();
+            var fandoms = await _interest.GetFandoms();
+            var movies = await _interest.GetMovies();
+            var music = await _interest.GetMusic();
+            var sports = await _interest.GetSports();
+            returnView = CheckIfActivity(activities, userInterest, foundUser);
+            if(returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfFandom(fandoms, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfMovie(movies, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfMusic(music, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            returnView = CheckIfSport(sports, userInterest, foundUser);
+            if (returnView)
+            {
+                return RedirectToAction(nameof(AddInterests));
+            }
+            return RedirectToAction(nameof(AddInterests));
+        }
+
+        // GET: UserInterest/ViewInterests
+        [HttpGet]
+        public IActionResult ViewInterests()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            var userInterests = _repo.UserInterest.FindAll().Where(a => a.UserId == foundUser.UserId);
+            if (foundUser == null)
+            {
+                return NotFound();
+            }
+            return View(userInterests);
+        }
+
+        // GET: Users/EditInterest/5
+        [HttpGet]
+        public IActionResult EditInterest(int id)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            var foundUserInterest = _repo.UserInterest.FindByCondition(a => a.UserInterestId == id).SingleOrDefault();
+            if (foundUserInterest == null)
+            {
+                return NotFound();
+            }
+            return View(foundUserInterest);
+        }
+
+        // POST: Users/EditInterest/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditInterest(int id, UserInterest userInterest)
+        {
+            var foundUserInterest = _repo.UserInterest.FindByCondition(a => a.UserInterestId == id).SingleOrDefault();
+            foundUserInterest.Weight = userInterest.Weight;
+            _repo.UserInterest.Update(foundUserInterest);
+            _repo.Save();
+            return RedirectToAction(nameof(ViewInterests));
+        }
+
+        // GET: Users/RemoveInterest/5
+        [HttpGet]
+        public IActionResult RemoveInterest(int id)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            var foundUserInterest = _repo.UserInterest.FindByCondition(a => a.UserInterestId == id).SingleOrDefault();
+            if (foundUserInterest == null)
+            {
+                return NotFound();
+            }
+            return View(foundUserInterest);
+        }
+
+        // POST: UserInterest/RemoveInterest/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveInterest(int id, UserInterest userInterest)
+        {
+            var foundUserInterest = _repo.UserInterest.FindByCondition(a => a.UserInterestId == id).SingleOrDefault();
+            _repo.UserInterest.Delete(foundUserInterest);
+            _repo.Save();
+            return RedirectToAction(nameof(ViewInterests));
+        }
+
+        [HttpPost]
+        public JsonResult GetInterests(string prefix)
+        {
+            var interests = _interest.GetActivities();
+            return Json(interests);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetInterestsAsync(string prefix)
+        {
+            var interests = await _interest.GetActivities();
+            return Json(interests);
+        }
+
 
         // GET: Users/Delete/5
         public IActionResult Delete(int? id)
@@ -167,6 +315,173 @@ namespace PhiloiWebApp.Controllers
             if(foundUser != null)
             {
                 return true;
+            }
+            return false;
+        }
+
+        public IActionResult Search(string searchString)
+        {
+            /*var users = _repo.User.FindByCondition(u => u.ListOfInterests.Contains(searchString));
+            if (!String.IsNullOrEmpty(searchString))
+            {
+            users = users.Where(s => s.ListOfInterests.Contains(searchString));
+            }
+            return View(await users.ToListAsync());*/
+            return View();
+        }
+
+        public bool CheckIfActivity(Activities[] activities, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < activities.Length; i++)
+            {
+                if (activities[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfFandom(Fandoms[] fandoms, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < fandoms.Length; i++)
+            {
+                if (fandoms[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfMovie(Movies[] movies, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < movies.Length; i++)
+            {
+                if (movies[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfMusic(Music[] music, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < music.Length; i++)
+            {
+                if (music[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public bool CheckIfSport(Sports[] sports, UserInterest userInterest, User foundUser)
+        {
+            for (int i = 0; i < sports.Length; i++)
+            {
+                if (sports[i].name == userInterest.Name)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        try
+                        {
+                            userInterest.UserId = foundUser.UserId;
+                            _repo.UserInterest.Create(userInterest);
+                            _repo.Save();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!UserExists(foundUser.UserId))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        return true;
+                    }
+                }
             }
             return false;
         }

@@ -31,7 +31,7 @@ namespace CustomWebApi.Controllers
         }
 
         // GET: api/Sports/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
             var sport = _repo.Sport.FindByCondition(a => a.SportId == id).SingleOrDefault();
@@ -41,6 +41,17 @@ namespace CustomWebApi.Controllers
                 return NotFound();
             }
 
+            return Ok(sport);
+        }
+
+        [HttpGet("{input}")]
+        public IActionResult Get(string input)
+        {
+            var sport = _repo.Sport.FindByCondition(a => a.Name.Contains(input));
+            if(sport == null)
+            {
+                return NotFound();
+            }
             return Ok(sport);
         }
 

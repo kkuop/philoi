@@ -31,7 +31,7 @@ namespace CustomWebApi.Controllers
         }
 
         // GET: api/Movies/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
             var movie = _repo.Movie.FindByCondition(a => a.MovieId == id).SingleOrDefault();
@@ -41,6 +41,17 @@ namespace CustomWebApi.Controllers
                 return NotFound();
             }
 
+            return Ok(movie);
+        }
+
+        [HttpGet("{input}")]
+        public IActionResult Get(string input)
+        {
+            var movie = _repo.Movie.FindByCondition(a => a.Name.Contains(input));
+            if (movie == null)
+            {
+                return NotFound();
+            }
             return Ok(movie);
         }
 

@@ -44,6 +44,18 @@ namespace CustomWebApi.Controllers
             return Ok(activity);
         }
 
+        [HttpGet("{input}")]
+        public IActionResult Get(string input)
+        {
+            var activity = _repo.Activity.FindByCondition(a => a.Name.Contains(input));
+            if (activity == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(activity);
+        }
+
         // PUT: api/Activities/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.

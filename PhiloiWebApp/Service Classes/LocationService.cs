@@ -16,8 +16,8 @@ namespace PhiloiWebApp.Service_Classes
 
 
         }
-        
-        public async Task<LocationService> GetDistance(User user1,User user2)
+
+        public async Task<LocationService> GetDistance(User user1, User user2)
         {
 
             HttpClient client = new HttpClient();
@@ -32,3 +32,4 @@ namespace PhiloiWebApp.Service_Classes
 
     }
 }
+
