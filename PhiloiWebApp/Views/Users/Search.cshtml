@@ -33,11 +33,22 @@
                 {
                     foreach (var item in Model.userMatches)
                     {
-                        <tr>
-                            <td><img src="@Html.Raw(item.ImgUrl)" height="15" alt="User Image" /></td>
-                            <td>@Html.Raw(item.FirstName)</td>
-                            <td>@Html.Raw(item.ZipCode)</td>
-                        </tr>
+                        if (item.IdentityUserId == Model.IdentityUserId)
+                        {
+                            if(Model.userMatches.Count == 1)
+                            {
+                                <tr><td>No Results!</td></tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td><img src="@Html.Raw(item.ImgUrl)" height="15" alt="User Image" /></td>
+                                <td>@Html.Raw(item.FirstName)</td>
+                                <td>@Html.Raw(item.ZipCode)</td>
+                            </tr>
+                        }
+
                     }
                 }
                 else

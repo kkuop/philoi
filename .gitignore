@@ -350,7 +350,6 @@ MigrationBackup/
 .ionide/
 
 # User-defined
-/PhiloiWebApp/wwwroot*
 
 /PhiloiWebApp/Api_Key*
 
