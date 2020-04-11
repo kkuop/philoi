@@ -42,7 +42,7 @@ namespace PhiloiWebApp.Controllers
             }
 
             ViewBag.Activities = await _interest.GetActivities();
-           // MatchingInterests(foundUser);
+            MatchingInterests(foundUser);
 
             var interests = _repo.UserInterest.FindByCondition(s => s.UserId == foundUser.UserId);
 
@@ -363,8 +363,9 @@ namespace PhiloiWebApp.Controllers
             foreach (var user in userlist) {
                 var range = await _locationService.GetDistance(user1,user);
                 foreach (var leg in range.routes[0].legs)
-                {
-                    counter = counter + leg.distance.value;
+                { var distance = leg.distance.text;
+                    double distanceNum = trimDistance(distance);
+                    counter = counter +distanceNum;
                 }
                 if (counter < limit)
                 {
@@ -384,13 +385,14 @@ namespace PhiloiWebApp.Controllers
             var lvl1 = new List<User>();
             var lvl2 = new List<User>();
             var lvl3 = new List<User>();
-            var userIntrests = _repo.UserInterest.FindByCondition(s => s.UserId == user1.UserId).ToList();
+            List<UserInterest> userIntrests = _repo.UserInterest.FindByCondition(s => s.UserId == user1.UserId).ToList();
             int points;
             var userlist = await userWithinRange(user1);
-            foreach (var user in userlist)
+            var user1list = userlist.Where(s => s.UserId != user1.UserId);
+            foreach (var user in user1list)
             {
-                var notuserList = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId).ToList();
-                var intersection = userIntrests.Intersect(notuserList);
+               List<UserInterest>notuserList = _repo.UserInterest.FindByCondition(s => s.UserId == user.UserId).ToList();
+               var intersection = findIntersection(userIntrests,notuserList);
                 if (intersection.Count() > 0)
                 {
                     foreach (var item in intersection)
@@ -563,6 +565,36 @@ namespace PhiloiWebApp.Controllers
                 }
             }
             return false;
+      
+        }
+        public double trimDistance(string s)
+        {
+           var justInts =s.Substring(0, s.IndexOf("m"));
+            double distance = double.Parse(justInts);
+            return distance;
+
+        }
+
+        public List<UserInterest> findIntersection(List<UserInterest> listA, List<UserInterest> listB)
+        {
+            List<UserInterest> intersection= new List<UserInterest>();
+            foreach (var interestA in listA) 
+            {foreach(var interestB in listB)
+                {
+                    if (interestA.Name == interestB.Name) 
+                    {
+                        intersection.Add(interestA);
+                    
+                    
+                    }
+                
+                
+                
+                
+                }
+            
+            
+            }return intersection; 
         }
     }
 }
