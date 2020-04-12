@@ -1,0 +1,49 @@
+﻿@model IEnumerable<PhiloiWebApp.Models.UserMessage>
+
+@{
+    ViewData["Title"] = "Philoi - Your Messages";
+}
+
+<h1>Your Messages</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Content)
+            </th>
+            <th>
+                From
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Content)
+            </td>
+            <td>
+                @foreach (var user in ViewBag.UserList)
+                {
+                    if (user.UserId == item.UserId)
+                    {
+                        @Html.Raw(user.FirstName)
+                    }
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "Delete", new {  id=item.UserMessageId })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

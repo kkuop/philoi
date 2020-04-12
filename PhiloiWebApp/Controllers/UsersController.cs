@@ -69,6 +69,7 @@ namespace PhiloiWebApp.Controllers
             }
 
             var user = _repo.User.FindByCondition(m => m.UserId == id).SingleOrDefault();
+            ViewBag.UserInterests = _repo.UserInterest.FindByCondition(a => a.UserId == user.UserId);
             if (user == null)
             {
                 return NotFound();

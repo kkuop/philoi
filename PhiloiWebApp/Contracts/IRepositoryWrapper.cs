@@ -12,6 +12,7 @@ namespace PhiloiWebApp.Contracts
         ICategoryRepository Category { get; }
         
         IUserInterestRepository UserInterest { get; }
+        IUserMessageRepository UserMessage { get; }
         void Save();
     }
 }

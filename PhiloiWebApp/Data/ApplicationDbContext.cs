@@ -37,5 +37,6 @@ namespace PhiloiWebApp.Data
         public DbSet<UserInterest> UserInterests { get; set; }
         public DbSet<Interests> Interests { get; set; }
         public DbSet<Categories> Categories { get; set; }
+        public DbSet<UserMessage> UserMessages { get; set; }
     }
 }

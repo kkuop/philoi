@@ -53,6 +53,7 @@
                         <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> @Model.DateOfBirth.ToShortDateString()</p>
                         <p><a asp-action="Edit">Edit My Profile</a></p>
                         <p><a asp-action="ViewInterests">View My Interests</a></p>
+                        <p><a asp-controller="UserMessage" asp-action="GetMessages">Check Messages</a></p>
                     </div>
                 </div>
                 <br>
@@ -100,17 +101,6 @@
                 <div class="w3-card w3-round w3-white w3-hide-small">
                     <div class="w3-container">
                         <p>Interests</p>
-                        
-                            <!---<span class="w3-tag w3-small w3-theme-d5">News</span>
-    <span class="w3-tag w3-small w3-theme-d3">Labels</span>
-    <span class="w3-tag w3-small w3-theme-d2">Games</span>
-    <span class="w3-tag w3-small w3-theme-d1">Friends</span>
-    <span class="w3-tag w3-small w3-theme">Games</span>
-    <span class="w3-tag w3-small w3-theme-l1">Friends</span>
-    <span class="w3-tag w3-small w3-theme-l2">Food</span>
-    <span class="w3-tag w3-small w3-theme-l3">Design</span>
-    <span class="w3-tag w3-small w3-theme-l4">Art</span>
-    <span class="w3-tag w3-small w3-theme-l5">Photos</span>-->
                         <table>  
                         <thead>
                                 <tr>
@@ -154,18 +144,30 @@
                         <div class="w3-card w3-round w3-white">
                             <div class="w3-container w3-padding">
                                 <h6 class="w3-opacity">Best Matches</h6>
-                                <div contenteditable="true" class="w3-border w3-padding">
+                                <div class="w3-border w3-padding">
                                     <table class="table">
                                         <tbody>
-                                            @if (ViewBag.BestFriends != null)
+                                            @if (ViewBag.BestFriends.Count > 0)
                                             {
                                                 @foreach (var item in ViewBag.BestFriends)
                                                 {
                                                     <tr>
-                                                        <td><img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25"/></td>
-                                                        <td>@Html.Raw(item.FirstName)</td>
-                                                        <td>@Html.Raw(item.ZipCode)</td>
-                                                    </tr>
+                                                    <td>
+                                                        <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                            <img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25" />
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                            @Html.Raw(item.FirstName)
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                        @Html.Raw(item.ZipCode)
+                                                        </a>
+                                                    </td>
+                                                    </tr>                                                    
                                                 }
                                             }
                                             else
@@ -185,17 +187,29 @@
                         <div class="w3-card w3-round w3-white">
                             <div class="w3-container w3-padding">
                                 <h6 class="w3-opacity">Great Matches</h6>
-                                <div contenteditable="true" class="w3-border w3-padding">
+                                <div class="w3-border w3-padding">
                                     <table class="table">
                                         <tbody>
-                                            @if (ViewBag.GoodFriends != null)
+                                            @if (ViewBag.GoodFriends.Count > 0)
                                             {
                                                 @foreach (var item in ViewBag.GoodFriends)
                                                 {
                                                     <tr>
-                                                        <td><img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25" /></td>
-                                                        <td>@Html.Raw(item.FirstName)</td>
-                                                        <td>@Html.Raw(item.ZipCode)</td>
+                                                        <td>
+                                                            <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                                <img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25" />
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                                @Html.Raw(item.FirstName)
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                                @Html.Raw(item.ZipCode)
+                                                            </a>
+                                                        </td>
                                                     </tr>
                                                 }
                                             }
@@ -218,17 +232,29 @@
                             <div class="w3-card w3-round w3-white">
                                 <div class="w3-container w3-padding">
                                     <h6 class="w3-opacity">Good Matches</h6>
-                                    <div contenteditable="true" class="w3-border w3-padding">
+                                    <div class="w3-border w3-padding">
                                         <table class="table">
                                             <tbody>
-                                                @if (ViewBag.KindaFriends != null)
+                                                @if (ViewBag.KindaFriends.Count > 0)
                                                 {
                                                     @foreach (var item in ViewBag.KindaFriends)
                                                     {
                                                         <tr>
-                                                            <td><img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25" /></td>
-                                                            <td>@Html.Raw(item.FirstName)</td>
-                                                            <td>@Html.Raw(item.ZipCode)</td>
+                                                            <td>
+                                                                <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                                    <img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25" />
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                                    @Html.Raw(item.FirstName)
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                                                    @Html.Raw(item.ZipCode)
+                                                                </a>
+                                                            </td>
                                                         </tr>
                                                     }
                                                 }
