@@ -36,25 +36,24 @@ namespace PhiloiWebApp.Controllers
 
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            ViewBag.BestFriends = null;
+            ViewBag.GoodFriends = null;
+            ViewBag.KindaFriends = null;
             if (foundUser == null)
             {
                 return RedirectToAction(nameof(Create));
             }
 
-            ViewBag.Activities = await _interest.GetActivities();
+            ViewBag.UserInterests = _repo.UserInterest.FindByCondition(a => a.UserId == foundUser.UserId).ToList();
             if(foundUser.Address != null)
             {
-                MatchingInterests(foundUser);
+                await MatchingInterests(foundUser);
             }
             
 
             var interests = _repo.UserInterest.FindByCondition(s => s.UserId == foundUser.UserId);
 
             var events = await _events.GetEvents();
-
-            //var interestToSendToView =  interests.Include(s => s.Interest).ThenInclude(s => s.Category);
-
-            //user.Interests = interests.ToList();
 
             return View(foundUser);
         }
@@ -384,7 +383,7 @@ namespace PhiloiWebApp.Controllers
         }
 
 
-        public async void MatchingInterests(User user1)
+        public async Task<bool> MatchingInterests(User user1)
 
         {
             int threshold1 = 0;
@@ -403,20 +402,21 @@ namespace PhiloiWebApp.Controllers
                var intersection = findIntersection(userIntrests,notuserList);
                 if (intersection.Count() > 0)
                 {
+                    points = 0;
                     foreach (var item in intersection)
                     {
-                        points = 0;
                         points = points + item.Weight + 1;
-                        if (points > threshold1 && points < threshold2) { lvl1.Add(user); }
-                        else if (points >= threshold2 && points < threshold3) { lvl2.Add(user); }
-                        else if (points >= threshold3) { lvl3.Add(user); 
-                        }
+ 
                     }
+                    if (points > threshold1 && points < threshold2) { lvl1.Add(user); }
+                    else if (points >= threshold2 && points < threshold3) { lvl2.Add(user); }
+                    else if (points >= threshold3) { lvl3.Add(user); }
                 }
             }
             ViewBag.KindaFriends = lvl1;
             ViewBag.GoodFriends = lvl2;
             ViewBag.BestFriends = lvl3;
+            return true;
         }
 
         public bool CheckIfActivity(Activities[] activities, UserInterest userInterest, User foundUser)

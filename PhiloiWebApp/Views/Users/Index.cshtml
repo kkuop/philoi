@@ -120,11 +120,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in ViewBag.Activities)
+                                @foreach (var item in ViewBag.UserInterests)
                                 {
                                     <tr>
                                         <td>
-                                            @Html.Raw(item.name)
+                                            @Html.Raw(item.Name)
                                         </td>
                                     </tr>
                                 }
@@ -184,7 +184,7 @@
                     <div class="w3-col m12">
                         <div class="w3-card w3-round w3-white">
                             <div class="w3-container w3-padding">
-                                <h6 class="w3-opacity">Good Matches</h6>
+                                <h6 class="w3-opacity">Great Matches</h6>
                                 <div contenteditable="true" class="w3-border w3-padding">
                                     <table class="table">
                                         <tbody>
@@ -217,7 +217,7 @@
                         <div class="w3-col m12">
                             <div class="w3-card w3-round w3-white">
                                 <div class="w3-container w3-padding">
-                                    <h6 class="w3-opacity">Kinda Matches</h6>
+                                    <h6 class="w3-opacity">Good Matches</h6>
                                     <div contenteditable="true" class="w3-border w3-padding">
                                         <table class="table">
                                             <tbody>
