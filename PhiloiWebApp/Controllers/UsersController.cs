@@ -42,7 +42,11 @@ namespace PhiloiWebApp.Controllers
             }
 
             ViewBag.Activities = await _interest.GetActivities();
-            MatchingInterests(foundUser);
+            if(foundUser.Address != null)
+            {
+                MatchingInterests(foundUser);
+            }
+            
 
             var interests = _repo.UserInterest.FindByCondition(s => s.UserId == foundUser.UserId);
 
@@ -85,7 +89,7 @@ namespace PhiloiWebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("UserId,FirstName,LastName,DateOfBirth,Occupation,Email,ZipCode,Longitude,Latitude")] User user)
+        public IActionResult Create([Bind("UserId,FirstName,LastName,DateOfBirth,Occupation,Email,Address,ZipCode,Longitude,Latitude")] User user)
 
         {
             if (ModelState.IsValid)
@@ -361,15 +365,19 @@ namespace PhiloiWebApp.Controllers
             double counter = 0;
             int limit = 50;
             foreach (var user in userlist) {
-                var range = await _locationService.GetDistance(user1,user);
-                foreach (var leg in range.routes[0].legs)
-                { var distance = leg.distance.text;
-                    double distanceNum = trimDistance(distance);
-                    counter = counter +distanceNum;
-                }
-                if (counter < limit)
+                if(user.Address != null)
                 {
-                    usersInRange.Add(user);
+                    var range = await _locationService.GetDistance(user1, user);
+                    foreach (var leg in range.routes[0].legs)
+                    {
+                        var distance = leg.distance.text;
+                        double distanceNum = trimDistance(distance);
+                        counter = counter + distanceNum;
+                    }
+                    if (counter < limit)
+                    {
+                        usersInRange.Add(user);
+                    }
                 }
             }
             return usersInRange;
@@ -400,15 +408,15 @@ namespace PhiloiWebApp.Controllers
                         points = 0;
                         points = points + item.Weight + 1;
                         if (points > threshold1 && points < threshold2) { lvl1.Add(user); }
-                        else if (points > threshold2 && points < threshold3) { lvl2.Add(user); }
-                        else if (points > threshold3) { lvl3.Add(user); 
+                        else if (points >= threshold2 && points < threshold3) { lvl2.Add(user); }
+                        else if (points >= threshold3) { lvl3.Add(user); 
                         }
                     }
                 }
             }
-            ViewBag.KindaFreinds = lvl1;
-            ViewBag.GoodFreinds = lvl2;
-            ViewBag.BestFreinds = lvl3;
+            ViewBag.KindaFriends = lvl1;
+            ViewBag.GoodFriends = lvl2;
+            ViewBag.BestFriends = lvl3;
         }
 
         public bool CheckIfActivity(Activities[] activities, UserInterest userInterest, User foundUser)

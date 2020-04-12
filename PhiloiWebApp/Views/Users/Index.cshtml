@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<body class="w3-theme-l5">
+<div class="w3-theme-l5">
     
     <!-- Navbar -->
     @*<div class="w3-top">
@@ -149,17 +149,102 @@
             <!-- Middle Column -->
             <div class="w3-col m7">
 
-                <div class="w3-row-padding">
+                <div class="w3-row-padding w3-margin">
                     <div class="w3-col m12">
                         <div class="w3-card w3-round w3-white">
                             <div class="w3-container w3-padding">
-                                <h6 class="w3-opacity">Fill</h6>
-                                <p contenteditable="true" class="w3-border w3-padding">Status: Feeling Blue</p>
-                                <button type="button" class="w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button>
+                                <h6 class="w3-opacity">Best Matches</h6>
+                                <div contenteditable="true" class="w3-border w3-padding">
+                                    <table class="table">
+                                        <tbody>
+                                            @if (ViewBag.BestFriends != null)
+                                            {
+                                                @foreach (var item in ViewBag.BestFriends)
+                                                {
+                                                    <tr>
+                                                        <td><img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25"/></td>
+                                                        <td>@Html.Raw(item.FirstName)</td>
+                                                        <td>@Html.Raw(item.ZipCode)</td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr><td>No Results! Keep adding interests...</td></tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="w3-row-padding w3-margin">
+                    <div class="w3-col m12">
+                        <div class="w3-card w3-round w3-white">
+                            <div class="w3-container w3-padding">
+                                <h6 class="w3-opacity">Good Matches</h6>
+                                <div contenteditable="true" class="w3-border w3-padding">
+                                    <table class="table">
+                                        <tbody>
+                                            @if (ViewBag.GoodFriends != null)
+                                            {
+                                                @foreach (var item in ViewBag.GoodFriends)
+                                                {
+                                                    <tr>
+                                                        <td><img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25" /></td>
+                                                        <td>@Html.Raw(item.FirstName)</td>
+                                                        <td>@Html.Raw(item.ZipCode)</td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr><td>No Results! Keep adding interests...</td></tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="w3-row-padding w3-margin">
+                        <div class="w3-col m12">
+                            <div class="w3-card w3-round w3-white">
+                                <div class="w3-container w3-padding">
+                                    <h6 class="w3-opacity">Kinda Matches</h6>
+                                    <div contenteditable="true" class="w3-border w3-padding">
+                                        <table class="table">
+                                            <tbody>
+                                                @if (ViewBag.KindaFriends != null)
+                                                {
+                                                    @foreach (var item in ViewBag.KindaFriends)
+                                                    {
+                                                        <tr>
+                                                            <td><img src='@Html.Raw(item.ImgUrl)' alt="User Image" height="25" /></td>
+                                                            <td>@Html.Raw(item.FirstName)</td>
+                                                            <td>@Html.Raw(item.ZipCode)</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr><td>No Results! Keep adding interests...</td></tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
                 <div class="w3-container w3-card w3-white w3-round w3-margin">
                     <br>
@@ -290,4 +375,4 @@
         }
     </script>
 
-</body>
+</div>
