@@ -31,6 +31,7 @@ namespace PhiloiWebApp.Controllers
             _locationService = locationService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(User user)
         {
 
@@ -58,7 +59,16 @@ namespace PhiloiWebApp.Controllers
             return View(foundUser);
         }
        
-      
+        [HttpPost]
+        public IActionResult Index(int id, User user)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var foundUser = _repo.User.FindByCondition(a => a.IdentityUserId == userId).SingleOrDefault();
+            foundUser.SearchDistance = user.SearchDistance;
+            _repo.User.Update(foundUser);
+            _repo.Save();
+            return RedirectToAction("Index", foundUser);
+        }
 
         // GET: Users/Details/5
         public IActionResult Details(int? id)
@@ -363,7 +373,7 @@ namespace PhiloiWebApp.Controllers
             var usersInRange = new List<User>();
             var userlist = _repo.User.FindByCondition(s => s.UserId != user1.UserId).ToList();
             double counter = 0;
-            int limit = 50;
+            int limit = user1.SearchDistance;
             foreach (var user in userlist) {
                 if(user.Address != null)
                 {
