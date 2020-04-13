@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PhiloiWebApp.JSON_Classes
 {
 
-    public class Rootobject
+    public class InterestsJson
     {
         public Activities[] Property1 { get; set; }
         public Fandoms[] Property2 { get; set; }
