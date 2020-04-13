@@ -43,9 +43,21 @@
                         else
                         {
                             <tr>
-                                <td><img src="@Html.Raw(item.ImgUrl)" height="25" alt="User Image" /></td>
-                                <td>@Html.Raw(item.FirstName)</td>
-                                <td>@Html.Raw(item.ZipCode)</td>
+                                <td>
+                                    <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                        <img src="@Html.Raw(item.ImgUrl)" height="25" alt="User Image" />
+                                    </a>    
+                                </td>
+                                <td>
+                                    <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                        @Html.Raw(item.FirstName)
+                                    </a>
+                                </td>
+                                <td>
+                                    <a style="display:block;width:100%" asp-action="Details" asp-route-id="@item.UserId">
+                                        @Html.Raw(item.ZipCode)
+                                    </a>
+                                </td>
                             </tr>
                         }
 
