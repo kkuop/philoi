@@ -4,7 +4,7 @@
     ViewData["Title"] = "SendMessage";
 }
 
-<h1>SendMessage</h1>
+<h1>Send a Message</h1>
 
 <hr />
 <div class="row">
@@ -27,7 +27,7 @@
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
+
                 <input type="hidden" asp-for="UserId" class="form-control" value="@ViewBag.Sender.UserId"/>
                 <span asp-validation-for="UserId" class="text-danger"></span>
             </div>

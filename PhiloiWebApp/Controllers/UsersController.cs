@@ -99,13 +99,16 @@ namespace PhiloiWebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("UserId,FirstName,LastName,DateOfBirth,Occupation,Email,Address,ZipCode,Longitude,Latitude")] User user)
+        public async Task<IActionResult> Create([Bind("UserId,FirstName,LastName,DateOfBirth,Occupation,Email,Address,ZipCode,Longitude,Latitude")] User user)
 
         {
             if (ModelState.IsValid)
             {
                 var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 user.IdentityUserId = userId;
+                var coords = await _locationService.GetUserCoords(user);
+                user.Latitude = coords.results[0].geometry.location.lat;
+                user.Longitude = coords.results[0].geometry.location.lng;
                 _repo.User.Create(user);
                 _repo.Save();
                 return RedirectToAction(nameof(Index));
@@ -341,10 +344,17 @@ namespace PhiloiWebApp.Controllers
         [HttpGet]
         public IActionResult Search(User user)
         {
+            List<User> users = new List<User>();
             if(user.IdentityUserId != null)
             {
-                var users = _repo.UserInterest.FindByCondition(a => a.Name.Contains(user.SearchTerm)).Include(a => a.User).Select(a => a.User);
-                user.userMatches = users.ToList();
+                var searchTerms = user.SearchTerm.Split(",");                
+                foreach(var word in searchTerms)
+                {
+                    var usersToJoin = _repo.UserInterest.FindByCondition(a => a.Name.Contains(word.Trim())).Include(a => a.User).Select(a => a.User).ToList();
+                    users.AddRange(usersToJoin);
+                }
+                
+                user.userMatches = users;
                 user.SearchTerm = null;
                 _repo.User.Update(user);
                 _repo.Save();
@@ -588,10 +598,16 @@ namespace PhiloiWebApp.Controllers
         }
         public double trimDistance(string s)
         {
-           var justInts =s.Substring(0, s.IndexOf("m"));
-            double distance = double.Parse(justInts);
-            return distance;
-
+           if(s.Contains("mi")) {
+                var justInts = s.Substring(0, s.IndexOf("m"));
+                double distance = double.Parse(justInts);
+                return distance;
+            } else
+            {
+                var justInts = s.Substring(0, s.IndexOf("f"));
+                double distance = double.Parse(justInts);
+                return distance;
+            }
         }
 
         public List<UserInterest> findIntersection(List<UserInterest> listA, List<UserInterest> listB)
